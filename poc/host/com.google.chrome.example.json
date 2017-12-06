@@ -5,7 +5,7 @@
 {
   "name": "com.google.chrome.example",
   "description": "Chrome Native Messaging API Example Host",
-  "path": "C:\\Users\\EnterName\\source\\repos\\ConsoleApplication1\\Debug\\ConsoleApplication1.exe",
+  "path": "C:\\Users\\EnterName\\source\\repos\\ValrusIEEngine\\poc\\ConsoleApplication1\\Debug\\ConsoleApplication1.exe",
   "type": "stdio",
   "allowed_origins": [
     "chrome-extension://knldjmfmopnpolahpmmgbagdohdnhkik/"
