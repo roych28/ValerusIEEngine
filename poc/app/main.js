@@ -29,23 +29,33 @@ function updateUiState() {
   }
 }
 
-function sendNativeMessage() {
+function sendNativeMessage(e) {
   message = {	"text": document.getElementById('input-text').value,
 				"width"  : window.innerWidth,
-				"height" :window.innerHeight
+				"height" : window.innerHeight
 	};
   port.postMessage(message);
   appendMessage("Sent message: <b>" + JSON.stringify(message) + "</b>");
 }
 
-function initNativeMessaging() {
+function initNativeMessaging(e) {
   message = {	"text": "#INIT#",
 				"width"  : window.innerWidth,
-				"height" :window.innerHeight
+				"height" : window.innerHeight
 	};
   port.postMessage(message);
   appendMessage("Sent message: <b>" + JSON.stringify(message) + "</b>");
 }
+
+function onResizeNativeMessaging(e) {
+  message = {	"text": "#ONRESIZE#",
+				"width"  : window.innerWidth,
+				"height" : window.innerHeight
+	};
+  port.postMessage(message);
+  appendMessage("Sent message: <b>" + JSON.stringify(message) + "</b>");
+}
+
 
 function onNativeMessage(message) {
   appendMessage("Received message: <b>" + JSON.stringify(message) + "</b>");
@@ -71,6 +81,8 @@ document.addEventListener('DOMContentLoaded', function () {
       'click', connect);
   document.getElementById('send-message-button').addEventListener(
       'click', initNativeMessaging);
+  window.addEventListener("resize", onResizeNativeMessaging);
+ 
   updateUiState();
 });
 
