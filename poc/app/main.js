@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 var port = null;
+var currentWindowPos = {x:-1,y:-1};
 
 var getKeys = function(obj){
    var keys = [];
@@ -12,6 +13,20 @@ var getKeys = function(obj){
    return keys;
 }
 
+function getWindowPos()
+{
+	var size = {x:-1, y:-1}; 
+
+	if(window.screenX){
+		size.x = window.screenX;
+		size.y = window.screenY;
+	}
+	else if(window.screenLeft){
+		size.x = window.screenLeft;
+		size.y = window.screenTop;
+	}
+	return size;
+}
 
 function appendMessage(text) {
   document.getElementById('response').innerHTML += "<p>" + text + "</p>";
@@ -32,7 +47,9 @@ function updateUiState() {
 function sendNativeMessage(e) {
   message = {	"text": document.getElementById('input-text').value,
 				"width"  : window.innerWidth,
-				"height" : window.innerHeight
+				"height" : window.innerHeight,
+				"x"		 : currentWindowPos.x,
+				"y"		 : currentWindowPos.y
 	};
   port.postMessage(message);
   appendMessage("Sent message: <b>" + JSON.stringify(message) + "</b>");
@@ -41,19 +58,46 @@ function sendNativeMessage(e) {
 function initNativeMessaging(e) {
   message = {	"text": "#INIT#",
 				"width"  : window.innerWidth,
-				"height" : window.innerHeight
+				"height" : window.innerHeight,
+				"x"		 : currentWindowPos.x,
+				"y"		 : currentWindowPos.y
 	};
   port.postMessage(message);
-  appendMessage("Sent message: <b>" + JSON.stringify(message) + "</b>");
+  //appendMessage("Sent message: <b>" + JSON.stringify(message) + "</b>");
 }
 
 function onResizeNativeMessaging(e) {
   message = {	"text": "#ONRESIZE#",
 				"width"  : window.innerWidth,
-				"height" : window.innerHeight
+				"height" : window.innerHeight,
+				"x"		 : currentWindowPos.x,
+				"y"		 : currentWindowPos.y
 	};
   port.postMessage(message);
-  appendMessage("Sent message: <b>" + JSON.stringify(message) + "</b>");
+  //appendMessage("Sent message: <b>" + JSON.stringify(message) + "</b>");
+}
+
+function onMoveNativeMessaging(e) {
+
+	var windowPos = getWindowPos();
+	
+	if( windowPos.x != currentWindowPos.x || currentWindowPos.y != currentWindowPos.y){
+		currentWindowPos = windowPos;
+		message = {	"text": "#ONMOVE#",
+				"width"  : window.innerWidth,
+				"height" : window.innerHeight,
+				"x"		 : currentWindowPos.x,
+				"y"		 : currentWindowPos.y			
+		};
+	
+		port.postMessage(message);
+		
+		
+		console.log("Sent message: " + JSON.stringify(message));
+	}
+	
+	
+	
 }
 
 
@@ -82,6 +126,7 @@ document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('send-message-button').addEventListener(
       'click', initNativeMessaging);
   window.addEventListener("resize", onResizeNativeMessaging);
+  window.addEventListener("mousemove", onMoveNativeMessaging);
  
   updateUiState();
 });
