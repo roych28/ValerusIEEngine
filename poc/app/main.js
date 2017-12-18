@@ -62,7 +62,11 @@ function initNativeMessaging(e) {
 				"x"		 : currentWindowPos.x,
 				"y"		 : currentWindowPos.y
 	};
-  port.postMessage(message);
+	
+	if(port){
+		port.postMessage(message);
+	}
+  
   //appendMessage("Sent message: <b>" + JSON.stringify(message) + "</b>");
 }
 
