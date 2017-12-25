@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 {
-  "name": "com.vicon.valerus",
-  "description": "",
-  "path": "C:\\Users\\EnterName\\source\\repos\\ValrusIEEngine\\ValrusIEEngine\\Debug\\ValrusIEEngine.exe",
+  "name": "com.vicon.valerus.app",
+  "description": "IE11 Wrapper",
+  "path": "C:\\Users\\EnterName\\source\\repos\\ValrusIEEngine\\Debug\\ValrusIEEngine.exe",
   "type": "stdio",
   "allowed_origins": [
     "chrome-extension://knldjmfmopnpolahpmmgbagdohdnhkik/"
