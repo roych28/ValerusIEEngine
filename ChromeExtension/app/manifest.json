@@ -10,6 +10,9 @@
       "local_path": "main.html"
     }
   },
+  "browser_action": {
+      "default_icon": "icon-status-bar.png"
+    },
   "icons": {
     "128": "icon-128.png"
   },
