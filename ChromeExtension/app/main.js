@@ -121,18 +121,22 @@ function connect() {
   port = chrome.runtime.connectNative(hostName);
   port.onMessage.addListener(onNativeMessage);
   port.onDisconnect.addListener(onDisconnected);
-  updateUiState();
+  
+  initNativeMessaging();
+  //updateUiState();
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-  document.getElementById('connect-button').addEventListener(
+  /*document.getElementById('connect-button').addEventListener(
       'click', connect);
   document.getElementById('send-message-button').addEventListener(
-      'click', initNativeMessaging);
-  window.addEventListener("resize", onResizeNativeMessaging);
-  window.addEventListener("mousemove", onMoveNativeMessaging);
+      'click', initNativeMessaging);*/
+	
+	window.addEventListener("resize", onResizeNativeMessaging);
+	window.addEventListener("mousemove", onMoveNativeMessaging);
  
-  updateUiState();
+	connect();
+	//updateUiState();
 });
 
 window.onbeforeunload = function() {
