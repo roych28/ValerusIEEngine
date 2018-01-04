@@ -5,14 +5,14 @@
   "version": "1.0",
   "manifest_version": 2,
   "description": "IE11 inside chrome.",
-  //"app": {
-  //  "launch": {
-  //    "local_path": "main.html"
-  //  }
-  //},
+  "app": {
+    "launch": {
+      "local_path": "main.html"
+    }
+  },
   "background": {
-    "scripts": ["background.js"],
-    "persistent": false
+    "scripts": ["main.js"]
+    //"persistent": false
   },
   "content_scripts": [{
         "matches": ["<all_urls>"],
@@ -21,16 +21,13 @@
     }],
   "browser_action": {
     "default_title": "valerus",
-    "default_icon": "icon-128.png",
-    "default_popup": "popup.html"
+    "default_icon": "icon-128.png"
+    //"default_popup": "popup.html"
   },
   "icons": {
     "128": "icon-128.png"
   },
   "permissions": [
-	"background",
-    "nativeMessaging",
-	"activeTab",
-	"tabs"
+    "nativeMessaging"
   ]
 }

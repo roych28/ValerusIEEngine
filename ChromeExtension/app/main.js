@@ -1,7 +1,7 @@
 // Copyright 2013 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-alert('1');
+//alert('1');
 
 var port = null;
 var currentWindowPos = {x:-1,y:-1};
@@ -125,16 +125,20 @@ function connect() {
   //updateUiState();
 }
 
+chrome.browserAction.onClicked.addListener(function callback(){
+	alert('browserAction.onClicked');
+	window.addEventListener("resize", onResizeNativeMessaging);
+	window.addEventListener("mousemove", onMoveNativeMessaging);
+ 
+	connect();
+});
 //document.addEventListener('DOMContentLoaded', function () {
   /*document.getElementById('connect-button').addEventListener(
       'click', connect);
   document.getElementById('send-message-button').addEventListener(
       'click', initNativeMessaging);*/
 	
-	window.addEventListener("resize", onResizeNativeMessaging);
-	window.addEventListener("mousemove", onMoveNativeMessaging);
- 
-	connect();
+	
 	//updateUiState();
 //});
 
