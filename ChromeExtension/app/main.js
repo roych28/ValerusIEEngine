@@ -1,6 +1,7 @@
 // Copyright 2013 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+alert('1');
 
 var port = null;
 var currentWindowPos = {x:-1,y:-1};
@@ -29,18 +30,18 @@ function getWindowPos()
 }
 
 function appendMessage(text) {
-  document.getElementById('response').innerHTML += "<p>" + text + "</p>";
+  //document.getElementById('response').innerHTML += "<p>" + text + "</p>";
 }
 
 function updateUiState() {
   if (port) {
-    document.getElementById('connect-button').style.display = 'none';
+    //document.getElementById('connect-button').style.display = 'none';
     //document.getElementById('input-text').style.display = 'block';
-    document.getElementById('send-message-button').style.display = 'block';
+    //document.getElementById('send-message-button').style.display = 'block';
   } else {
-    document.getElementById('connect-button').style.display = 'block';
+    //document.getElementById('connect-button').style.display = 'block';
     //document.getElementById('input-text').style.display = 'none';
-    document.getElementById('send-message-button').style.display = 'none';
+    //document.getElementById('send-message-button').style.display = 'none';
   }
 }
 
@@ -98,10 +99,7 @@ function onMoveNativeMessaging(e) {
 		
 		
 		console.log("Sent message: " + JSON.stringify(message));
-	}
-	
-	
-	
+	}	
 }
 
 
@@ -116,6 +114,7 @@ function onDisconnected() {
 }
 
 function connect() {
+	alert('connect');
   var hostName = "com.vicon.valerus.app";
   appendMessage("Connecting to native messaging host <b>" + hostName + "</b>")
   port = chrome.runtime.connectNative(hostName);
@@ -126,7 +125,7 @@ function connect() {
   //updateUiState();
 }
 
-document.addEventListener('DOMContentLoaded', function () {
+//document.addEventListener('DOMContentLoaded', function () {
   /*document.getElementById('connect-button').addEventListener(
       'click', connect);
   document.getElementById('send-message-button').addEventListener(
@@ -137,10 +136,12 @@ document.addEventListener('DOMContentLoaded', function () {
  
 	connect();
 	//updateUiState();
-});
+//});
 
 window.onbeforeunload = function() {
   message = {"text": "#STOP#"};
   port.postMessage(message);
   appendMessage("Sent message: <b>" + JSON.stringify(message) + "</b>");
+  
+  alert('10');
 };
