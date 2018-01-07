@@ -124,23 +124,19 @@ function connect() {
   initNativeMessaging();
   //updateUiState();
 }
-
-chrome.browserAction.onClicked.addListener(function callback(){
+document.addEventListener('DOMContentLoaded', function () {
+  /*document.getElementById('connect-button').addEventListener(
+      'click', connect);
+  document.getElementById('send-message-button').addEventListener(
+      'click', initNativeMessaging);*/
 	alert('browserAction.onClicked');
 	window.addEventListener("resize", onResizeNativeMessaging);
 	window.addEventListener("mousemove", onMoveNativeMessaging);
  
 	connect();
-});
-//document.addEventListener('DOMContentLoaded', function () {
-  /*document.getElementById('connect-button').addEventListener(
-      'click', connect);
-  document.getElementById('send-message-button').addEventListener(
-      'click', initNativeMessaging);*/
-	
 	
 	//updateUiState();
-//});
+});
 
 window.onbeforeunload = function() {
   message = {"text": "#STOP#"};
