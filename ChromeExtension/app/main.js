@@ -1,18 +1,6 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-//alert('1');
-
 var port = null;
 var currentWindowPos = {x:-1,y:-1};
-
-var getKeys = function(obj){
-   var keys = [];
-   for(var key in obj){
-      keys.push(key);
-   }
-   return keys;
-}
+var urlToSend = "";
 
 function getWindowPos()
 {
@@ -29,22 +17,6 @@ function getWindowPos()
 	return size;
 }
 
-function appendMessage(text) {
-  //document.getElementById('response').innerHTML += "<p>" + text + "</p>";
-}
-
-function updateUiState() {
-  if (port) {
-    //document.getElementById('connect-button').style.display = 'none';
-    //document.getElementById('input-text').style.display = 'block';
-    //document.getElementById('send-message-button').style.display = 'block';
-  } else {
-    //document.getElementById('connect-button').style.display = 'block';
-    //document.getElementById('input-text').style.display = 'none';
-    //document.getElementById('send-message-button').style.display = 'none';
-  }
-}
-
 function sendNativeMessage(e) {
   message = {	"text": document.getElementById('input-text').value,
 				"width"  : window.innerWidth,
@@ -53,7 +25,7 @@ function sendNativeMessage(e) {
 				"y"		 : currentWindowPos.y
 	};
   port.postMessage(message);
-  appendMessage("Sent message: <b>" + JSON.stringify(message) + "</b>");
+  console.log("Sent message: " + JSON.stringify(message));
 }
 
 function initNativeMessaging(e) {
@@ -61,14 +33,15 @@ function initNativeMessaging(e) {
 				"width"  : window.innerWidth,
 				"height" : window.innerHeight,
 				"x"		 : currentWindowPos.x,
-				"y"		 : currentWindowPos.y
+				"y"		 : currentWindowPos.y,
+				//"url"	 : urlToSend
 	};
 	
 	if(port){
 		port.postMessage(message);
 	}
   
-  //appendMessage("Sent message: <b>" + JSON.stringify(message) + "</b>");
+	console.log("Sent message: " + JSON.stringify(message));
 }
 
 function onResizeNativeMessaging(e) {
@@ -79,7 +52,7 @@ function onResizeNativeMessaging(e) {
 				"y"		 : currentWindowPos.y
 	};
   port.postMessage(message);
-  //appendMessage("Sent message: <b>" + JSON.stringify(message) + "</b>");
+  console.log("Sent message: " + JSON.stringify(message));
 }
 
 function onMoveNativeMessaging(e) {
@@ -96,52 +69,52 @@ function onMoveNativeMessaging(e) {
 		};
 	
 		port.postMessage(message);
-		
-		
 		console.log("Sent message: " + JSON.stringify(message));
 	}	
 }
 
-
 function onNativeMessage(message) {
-  appendMessage("Received message: <b>" + JSON.stringify(message) + "</b>");
+  console.log("Received message: " + JSON.stringify(message));
 }
 
 function onDisconnected() {
-  appendMessage("Failed to connect: " + chrome.runtime.lastError.message);
+  console.log("Failed to connect: " + chrome.runtime.lastError.message);
   port = null;
   updateUiState();
 }
 
 function connect() {
-	alert('connect');
   var hostName = "com.vicon.valerus.app";
-  appendMessage("Connecting to native messaging host <b>" + hostName + "</b>")
+  console.log("Connecting to native messaging host " + hostName);
+  
   port = chrome.runtime.connectNative(hostName);
   port.onMessage.addListener(onNativeMessage);
   port.onDisconnect.addListener(onDisconnected);
   
   initNativeMessaging();
-  //updateUiState();
 }
+
+function getQueryParams( name, url ) {
+    if (!url) url = location.href;
+    name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+    var regexS = "[\\?&]"+name+"=([^&#]*)";
+    var regex = new RegExp( regexS );
+    var results = regex.exec( url );
+    return results == null ? null : results[1];
+}
+
 document.addEventListener('DOMContentLoaded', function () {
-  /*document.getElementById('connect-button').addEventListener(
-      'click', connect);
-  document.getElementById('send-message-button').addEventListener(
-      'click', initNativeMessaging);*/
-	alert('browserAction.onClicked');
 	window.addEventListener("resize", onResizeNativeMessaging);
 	window.addEventListener("mousemove", onMoveNativeMessaging);
  
-	connect();
+	//alert(window.location.search);
+	//urlToSend = getQueryParams('url', window.location.search);
 	
-	//updateUiState();
+	connect();
 });
 
 window.onbeforeunload = function() {
   message = {"text": "#STOP#"};
   port.postMessage(message);
-  appendMessage("Sent message: <b>" + JSON.stringify(message) + "</b>");
-  
-  alert('10');
+  console.log("Sent message: " + JSON.stringify(message));
 };

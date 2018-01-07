@@ -1,7 +1,12 @@
 
 function connect(){
-
-	chrome.tabs.executeScript(null, {file: "main.js"});
+	chrome.runtime.sendMessage({
+		command: "connect",
+		url:	 document.getElementById("urlInput").value
+    },
+    function(response) {
+		
+    });
 }
 
 document.addEventListener('DOMContentLoaded', function () {

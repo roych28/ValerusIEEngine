@@ -28,7 +28,8 @@ void ProcessMessage(const char* jsonMsg, std::map<std::string,std::string> &pars
 
 	parsedValues["command"] = root.get("text", "").asString();
 	parsedValues["width"]	= root.get("width", "").asString();
-	parsedValues["height"]	= root.get("height", "").asString();
+	parsedValues["height"] = root.get("height", "").asString();
+	parsedValues["url"] = root.get("url", "http://47.21.44.216/").asString();
 	/*if (request == "logoff_windows")
 	{
 		//ExitWindowsEx(EWX_LOGOFF, 0);

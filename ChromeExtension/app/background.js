@@ -1,19 +1,17 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-alert('1');
+/*chrome.browserAction.onClicked.addListener(function callback(){
+	chrome.tabs.create({'url': 'main.html'}, function(tab) {
+		console.log("Valerus tab loaded");
+	});
+});*/
 
-chrome.browserAction.onClicked.addListener(function callback(){
-	alert('browserAction.onClicked');
+chrome.runtime.onMessage.addListener(
+  function(request, sender, sendResponse) {
+    if (request.command == "connect")
 	
+		var url = "main.html?url="
+        + encodeURIComponent(request.url);
 	
-
-      chrome.tabs.create({'url': 'main.html'}, function(tab) {
-
-      });
-
-	//window.addEventListener("resize", onResizeNativeMessaging);
-	//window.addEventListener("mousemove", onMoveNativeMessaging);
- 
-	//connect();
-});
+		chrome.tabs.create({'url': url}, function(tab) {
+			console.log("Valerus tab loaded");
+		});
+  });
