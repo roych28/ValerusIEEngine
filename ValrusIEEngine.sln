@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2009
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ValrusIEEngine", "ValrusIEEngine\ValrusIEEngine.vcxproj", "{588C3EDA-1545-4D13-B73A-7236299143A6}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "ValerusChromeExtSetup", "ValerusChromeExtSetup\ValerusChromeExtSetup.vdproj", "{90A697A4-3E3D-4796-903A-88C466EEBDA4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{588C3EDA-1545-4D13-B73A-7236299143A6}.Release|x64.Build.0 = Release|x64
 		{588C3EDA-1545-4D13-B73A-7236299143A6}.Release|x86.ActiveCfg = Release|Win32
 		{588C3EDA-1545-4D13-B73A-7236299143A6}.Release|x86.Build.0 = Release|Win32
+		{90A697A4-3E3D-4796-903A-88C466EEBDA4}.Debug|x64.ActiveCfg = Debug
+		{90A697A4-3E3D-4796-903A-88C466EEBDA4}.Debug|x86.ActiveCfg = Debug
+		{90A697A4-3E3D-4796-903A-88C466EEBDA4}.Release|x64.ActiveCfg = Release
+		{90A697A4-3E3D-4796-903A-88C466EEBDA4}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
