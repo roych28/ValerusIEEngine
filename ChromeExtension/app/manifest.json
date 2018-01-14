@@ -1,7 +1,8 @@
 {
-  // Extension ID: lioodinblkkgcgffkgleihgkbhmmcbfg
-  // "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDcBHwzDvyBQ6bDppkIs9MP4ksKqCMyXQ/A52JivHZKh4YO/9vJsT3oaYhSpDCE9RPocOEQvwsHsFReW2nUEc6OLLyoCFFxIb7KkLGsmfakkut/fFdNJYh0xOTbSN8YvLWcqph09XAY2Y/f0AL7vfO1cuCqtkMt8hFrBGWxDdf9CQIDAQAB",
+  // Extension ID: 	biaidifgnfeaniiiemaofgbgflffhgdn
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAkrRwumK8vJtaodccftkwD2AH2hmcpvUUArFbiMOUz/YId505ZSdnOU7RxYGbIhSYOciN8JNDpP3xn25gZ7yu6EnguxwJFc1KW3SAZf1RYvFzFep5OnxMntR2YOHHl1TnUXPgrKBjTTK4XxJil7GpJliwaG5sopNI8tsoeDTqxRkZFvR5cGaJXmHlY/4qnm/bXQiu5HW3MeoDanwbBuhRbw2+ZF6RQh4CPrvdnpTcGnb8Ud2rKpsvJSVngLwaBWSJb6qm0KzXxfA2PkY1sJdbcYkmNc9qSmhhgoTCY9yrt42aoO/nz39hEE/618iuQMbrR3YM5brJBsGWE2XH+LMIKQIDAQAB",
   "name": "Valrus IE Wrapper",
+  "short_name": "ValerusIE",
   "version": "2.0",
   "manifest_version": 2,
   "description": "IE11 inside chrome.",

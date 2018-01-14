@@ -6,6 +6,6 @@ chrome.runtime.onMessage.addListener(
         + encodeURIComponent(request.url);
 	
 		chrome.tabs.create({'url': url}, function(tab) {
-			console.log("Valerus tab loaded");
+			console.log("Valerus tab loaded", tab.id);
 		});
   });

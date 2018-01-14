@@ -15,6 +15,24 @@
     {
         "Entry"
         {
+        "MsmKey" = "8:_2BDA7ACF8D3B46418102D1975E2AB9A9"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_3F26B061C62B4DC78FB75E16147240C2"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_5D5DC3F894474A339DA43E92E974F368"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_73E817BE7C7642668C47CDB50EA6EC0D"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -74,6 +92,66 @@
         }
         "File"
         {
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2BDA7ACF8D3B46418102D1975E2AB9A9"
+            {
+            "SourcePath" = "8:..\\ChromeExtension\\host\\com.vicon.valerus.app.json"
+            "TargetName" = "8:com.vicon.valerus.app.json"
+            "Tag" = "8:"
+            "Folder" = "8:_C2F59E94B5E0483B9787F444751433E2"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3F26B061C62B4DC78FB75E16147240C2"
+            {
+            "SourcePath" = "8:..\\ChromeExtension\\host\\uninstall_host.bat"
+            "TargetName" = "8:uninstall_host.bat"
+            "Tag" = "8:"
+            "Folder" = "8:_C2F59E94B5E0483B9787F444751433E2"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5D5DC3F894474A339DA43E92E974F368"
+            {
+            "SourcePath" = "8:..\\ChromeExtension\\host\\install_host.bat"
+            "TargetName" = "8:install_host.bat"
+            "Tag" = "8:"
+            "Folder" = "8:_C2F59E94B5E0483B9787F444751433E2"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
         }
         "FileType"
         {
@@ -136,6 +214,17 @@
                 {
                 }
             }
+            "{1525181F-901A-416C-8A58-119130FE478E}:_C2F59E94B5E0483B9787F444751433E2"
+            {
+            "Name" = "8:#1918"
+            "AlwaysCreate" = "11:FALSE"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Property" = "8:PersonalFolder"
+                "Folders"
+                {
+                }
+            }
         }
         "LaunchCondition"
         {
@@ -153,7 +242,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:ValerusChromeExtSetup"
         "ProductCode" = "8:{4F1B5E35-3937-4628-9AFB-34F5C3E3CE42}"
-        "PackageCode" = "8:{94AAAC0F-0EE5-45B6-827F-F37D37DFF15E}"
+        "PackageCode" = "8:{CF80D7CD-6BDF-4D71-9F09-AF974A1E7AFF}"
         "UpgradeCode" = "8:{5F757E87-E29A-42EF-85E8-C02E0281AB4A}"
         "AspNetVersion" = "8:"
         "RestartWWWService" = "11:FALSE"
