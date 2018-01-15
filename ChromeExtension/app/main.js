@@ -34,7 +34,7 @@ function initNativeMessaging(e) {
 				"height" : window.innerHeight,
 				"x"		 : currentWindowPos.x,
 				"y"		 : currentWindowPos.y,
-				//"url"	 : urlToSend
+				"url"	 : urlToSend
 	};
 	
 	if(port){
@@ -100,17 +100,76 @@ function getQueryParams( name, url ) {
     var regexS = "[\\?&]"+name+"=([^&#]*)";
     var regex = new RegExp( regexS );
     var results = regex.exec( url );
+	console.log('getQueryParams', results);
     return results == null ? null : results[1];
+}
+
+var IEPage = {
+	windowId: null,
+    tabId: null,
+    isAttached: false,
+    realTitle: '',
+    hostName: '',
+	onActivated: function(){
+		port.postMessage({text: '#SHOW#'});
+	},
+	onDeactivated: function(){
+		port.postMessage({text: '#HIDE#'});
+	},
+	initEvents: function(){
+		chrome.tabs.onActivated.addListener(function (activeInfo) {
+			if (activeInfo.tabId == this.tabId) {
+				this.onActivated();
+			} else {
+				if (activeInfo.windowId == this.windowId) {
+					this.onDeactivated();
+				}
+			}
+		}.bind(this));
+
+		chrome.windows.onFocusChanged.addListener(function (windowId) {
+			if (windowId == this.windowId) {
+				chrome.tabs.getCurrent(function (tab) {
+					if (tab.active) {
+						this.onActivated();
+					}
+				}.bind(this));
+			} else {
+				this.onDeactivated();
+			}
+		}.bind(this));
+
+		chrome.tabs.onAttached.addListener(function (tabId, attachInfo) {
+			if (tabId == this.tabId) {
+				this.windowId = attachInfo.newWindowId;
+			}
+		}.bind(this));
+
+		// If this is the active tab, then activate the host window
+		chrome.tabs.getCurrent(function (tab) {
+			if (tab.active) {
+				this.onActivated();
+			}
+		}.bind(this));
+	},
+	init: function(){
+		
+		urlToSend = decodeURIComponent(getQueryParams("url"));
+		
+		chrome.tabs.getCurrent(function(tab) {
+            this.tabId = tab.id;
+            this.windowId = tab.windowId;
+			connect();
+			this.initEvents();			
+        }.bind(this));
+	}
 }
 
 document.addEventListener('DOMContentLoaded', function () {
 	window.addEventListener("resize", onResizeNativeMessaging);
 	window.addEventListener("mousemove", onMoveNativeMessaging);
- 
-	//alert(window.location.search);
-	//urlToSend = getQueryParams('url', window.location.search);
 	
-	connect();
+	IEPage.init();
 });
 
 window.onbeforeunload = function() {
