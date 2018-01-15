@@ -1,120 +1,37 @@
-var port = null;
-var currentWindowPos = {x:-1,y:-1};
-var urlToSend = "";
-
-function getWindowPos()
-{
-	var size = {x:-1, y:-1}; 
-
-	if(window.screenX){
-		size.x = window.screenX;
-		size.y = window.screenY;
-	}
-	else if(window.screenLeft){
-		size.x = window.screenLeft;
-		size.y = window.screenTop;
-	}
-	return size;
-}
-
-function sendNativeMessage(e) {
-  message = {	"text": document.getElementById('input-text').value,
-				"width"  : window.innerWidth,
-				"height" : window.innerHeight,
-				"x"		 : currentWindowPos.x,
-				"y"		 : currentWindowPos.y
-	};
-  port.postMessage(message);
-  console.log("Sent message: " + JSON.stringify(message));
-}
-
-function initNativeMessaging(e) {
-  message = {	"text": "#INIT#",
-				"width"  : window.innerWidth,
-				"height" : window.innerHeight,
-				"x"		 : currentWindowPos.x,
-				"y"		 : currentWindowPos.y,
-				"url"	 : urlToSend
-	};
-	
-	if(port){
-		port.postMessage(message);
-	}
-  
-	console.log("Sent message: " + JSON.stringify(message));
-}
-
-function onResizeNativeMessaging(e) {
-  message = {	"text": "#ONRESIZE#",
-				"width"  : window.innerWidth,
-				"height" : window.innerHeight,
-				"x"		 : currentWindowPos.x,
-				"y"		 : currentWindowPos.y
-	};
-  port.postMessage(message);
-  console.log("Sent message: " + JSON.stringify(message));
-}
-
-function onMoveNativeMessaging(e) {
-
-	var windowPos = getWindowPos();
-	
-	if( windowPos.x != currentWindowPos.x || currentWindowPos.y != currentWindowPos.y){
-		currentWindowPos = windowPos;
-		message = {	"text": "#ONMOVE#",
-				"width"  : window.innerWidth,
-				"height" : window.innerHeight,
-				"x"		 : currentWindowPos.x,
-				"y"		 : currentWindowPos.y			
-		};
-	
-		port.postMessage(message);
-		console.log("Sent message: " + JSON.stringify(message));
-	}	
-}
-
-function onNativeMessage(message) {
-  console.log("Received message: " + JSON.stringify(message));
-}
-
-function onDisconnected() {
-  console.log("Failed to connect: " + chrome.runtime.lastError.message);
-  port = null;
-  //updateUiState();
-}
-
-function connect() {
-  var hostName = "com.vicon.valerus.app";
-  console.log("Connecting to native messaging host " + hostName);
-  
-  port = chrome.runtime.connectNative(hostName);
-  port.onMessage.addListener(onNativeMessage);
-  port.onDisconnect.addListener(onDisconnected);
-  
-  initNativeMessaging();
-}
-
-function getQueryParams( name, url ) {
-    if (!url) url = location.href;
-    name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
-    var regexS = "[\\?&]"+name+"=([^&#]*)";
-    var regex = new RegExp( regexS );
-    var results = regex.exec( url );
-	console.log('getQueryParams', results);
-    return results == null ? null : results[1];
-}
 
 var IEPage = {
+	port: null,
 	windowId: null,
     tabId: null,
-    isAttached: false,
-    realTitle: '',
-    hostName: '',
-	onActivated: function(){
-		port.postMessage({text: '#SHOW#'});
+    hostName: 'com.vicon.valerus.app',
+	currentWindowPos: {x:-1,y:-1},
+	urlToSend: "http://47.21.44.216/", // default url
+	initialize: function(){
+		window.addEventListener("resize", 	 this.onResizeNativeMessaging);
+		window.addEventListener("mousemove", this.onMoveNativeMessaging);
+	
+		urlToSend = decodeURIComponent(this.getQueryParams("url"));
+		
+		chrome.tabs.getCurrent(function(tab) {
+            this.tabId = tab.id;
+            this.windowId = tab.windowId;
+			this.connect();
+			this.initEvents();			
+        }.bind(this));
 	},
-	onDeactivated: function(){
-		port.postMessage({text: '#HIDE#'});
+	stop: function(){
+		message = {"text": "#STOP#"};
+		this.port.postMessage(message);
+		console.log("Sent message: " + JSON.stringify(message));
+	},
+	connect: function() {
+	  console.log("Connecting to native messaging host " + this.hostName);
+	  
+	  this.port = chrome.runtime.connectNative(this.hostName);
+	  this.port.onMessage.addListener(this.onNativeMessage);
+	  this.port.onDisconnect.addListener(this.onDisconnected);
+	  
+	  this.initNativeMessaging();
 	},
 	initEvents: function(){
 		chrome.tabs.onActivated.addListener(function (activeInfo) {
@@ -145,35 +62,94 @@ var IEPage = {
 			}
 		}.bind(this));
 
-		// If this is the active tab, then activate the host window
 		chrome.tabs.getCurrent(function (tab) {
 			if (tab.active) {
 				this.onActivated();
 			}
 		}.bind(this));
 	},
-	init: function(){
+	onActivated: function(){
+		this.port.postMessage({text: '#SHOW#'});
+	},
+	onDeactivated: function(){
+		this.port.postMessage({text: '#HIDE#'});
+	},
+	onDisconnected: function() {
+		console.log("onDisconnected : " + chrome.runtime.lastError.message);
+		this.port = null;
+	},
+	onNativeMessage: function(message) {
+		console.log("Received message: " + JSON.stringify(message));
+	},
+	getQueryParams: function( name, url ) {
+		if (!url) url = location.href;
+		name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+		var regexS = "[\\?&]"+name+"=([^&#]*)";
+		var regex = new RegExp( regexS );
+		var results = regex.exec( url );
+		console.log('getQueryParams', results);
+		return results == null ? null : results[1];
+	},
+	onMoveNativeMessaging: function(e) {
+		var windowPos = this.getWindowPos();
 		
-		urlToSend = decodeURIComponent(getQueryParams("url"));
+		if( windowPos.x != this.currentWindowPos.x || this.currentWindowPos.y != this.currentWindowPos.y){
+			this.currentWindowPos = windowPos;
+			message = {	"text": "#ONMOVE#",
+					"width"  : window.innerWidth,
+					"height" : window.innerHeight,
+					"x"		 : this.currentWindowPos.x,
+					"y"		 : this.currentWindowPos.y			
+			};
 		
-		chrome.tabs.getCurrent(function(tab) {
-            this.tabId = tab.id;
-            this.windowId = tab.windowId;
-			connect();
-			this.initEvents();			
-        }.bind(this));
+			this.port.postMessage(message);
+			console.log("Sent message: " + JSON.stringify(message));
+		}	
+	},
+	onResizeNativeMessaging: function(e) {
+		message = {	"text": "#ONRESIZE#",
+					"width"  : window.innerWidth,
+					"height" : window.innerHeight,
+					"x"		 : this.currentWindowPos.x,
+					"y"		 : this.currentWindowPos.y 
+		};
+		this.port.postMessage(message);
+		console.log("Sent message: " + JSON.stringify(message));
+	},
+	initNativeMessaging: function(e) {
+		message = {	"text": "#INIT#",
+					"width"  : window.innerWidth,
+					"height" : window.innerHeight,
+					"x"		 : this.currentWindowPos.x,
+					"y"		 : this.currentWindowPos.y,
+					"url"	 : urlToSend
+		};
+
+		if(this.port){
+			this.port.postMessage(message);
+		}
+
+		console.log("Sent message: " + JSON.stringify(message));
+	},
+	getWindowPos: function() {
+		var size = {x:-1, y:-1}; 
+
+		if(window.screenX){
+			size.x = window.screenX;
+			size.y = window.screenY;
+		}
+		else if(window.screenLeft){
+			size.x = window.screenLeft;
+			size.y = window.screenTop;
+		}
+		return size;
 	}
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-	window.addEventListener("resize", onResizeNativeMessaging);
-	window.addEventListener("mousemove", onMoveNativeMessaging);
-	
-	IEPage.init();
+document.addEventListener('DOMContentLoaded', function () {	
+	IEPage.initialize();
 });
 
 window.onbeforeunload = function() {
-  message = {"text": "#STOP#"};
-  port.postMessage(message);
-  console.log("Sent message: " + JSON.stringify(message));
+	IEPage.stop();
 };
