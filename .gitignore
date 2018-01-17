@@ -3,3 +3,9 @@ ValrusIEEngine/Debug/
 poc/ConsoleApplication1/ConsoleApplication1/Debug/
 ValrusIEEngine/Release/
 Release/
+ValerusChromeExtSetup/ValerusSetup-x86_Release-SetupFiles/
+ValerusChromeExtSetup/ValerusSetup-x86_Debug-SetupFiles/x86_Debug.msi
+ValerusChromeExtSetup/ValerusSetup-cache/
+ValerusChromeExtSetup/ValerusSetup-x64_Release-SetupFiles/x64_Release.msi
+ValerusChromeExtSetup/ValerusSetup_1.0.0_DefaultBuild_Report.pdf
+ValerusChromeExtSetup/ValerusSetup-x64_Release-SetupFiles/
