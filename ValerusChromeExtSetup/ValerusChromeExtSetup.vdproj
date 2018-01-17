@@ -15,25 +15,79 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_2BDA7ACF8D3B46418102D1975E2AB9A9"
+        "MsmKey" = "8:_0D622A433E454000981B987E049A2CE0"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_3F26B061C62B4DC78FB75E16147240C2"
+        "MsmKey" = "8:_2AB84BF3E09D48C2BCD934C6193107CD"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_5D5DC3F894474A339DA43E92E974F368"
+        "MsmKey" = "8:_2C8A85CB6C864143948E360040121807"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_73E817BE7C7642668C47CDB50EA6EC0D"
+        "MsmKey" = "8:_2EB3210F40E24CA7BB25BF1D1F3762B8"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_2EFEB4638FBE442D91FBF9F7DE79341D"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_626FA993EC774BCE81A8A852697900C6"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_9DD7DD0E4A1F46C3AEE7D56A5AEADAD3"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_A5BE13B7F10C4936947FE0696102E37B"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_AB574585C2624AD9B54639EBBC1C16B6"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C209C03C9B9D480EB63DD23C64E10B08"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_CAFBE0DD6B1B483F87B5C3DED5261AF8"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_D4B6897570D94C65AD48537C0F0C3E32"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_EBA6A7ECBB1E44AAB2AAC7874D01C403"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -55,6 +109,14 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+            }
         }
         "Release"
         {
@@ -71,12 +133,42 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.6.1"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.6.1 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.6.1"
+                    }
+                }
+            }
         }
     }
     "Deployable"
     {
         "CustomAction"
         {
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_9EC7857E1F8646D28DDA02236EBD43E5"
+            {
+            "Name" = "8:postInstall.vbs"
+            "Condition" = "8:"
+            "Object" = "8:_C209C03C9B9D480EB63DD23C64E10B08"
+            "FileType" = "3:4"
+            "InstallAction" = "3:1"
+            "Arguments" = "8:"
+            "EntryPoint" = "8:"
+            "Sequence" = "3:1"
+            "Identifier" = "8:_24C99556_20A3_44B2_A1C1_75C79C86BE9E"
+            "InstallerClass" = "11:FALSE"
+            "CustomActionData" = "8:"
+            }
         }
         "DefaultFeature"
         {
@@ -92,12 +184,12 @@
         }
         "File"
         {
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2BDA7ACF8D3B46418102D1975E2AB9A9"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0D622A433E454000981B987E049A2CE0"
             {
             "SourcePath" = "8:..\\ChromeExtension\\host\\com.vicon.valerus.app.json"
             "TargetName" = "8:com.vicon.valerus.app.json"
             "Tag" = "8:"
-            "Folder" = "8:_C2F59E94B5E0483B9787F444751433E2"
+            "Folder" = "8:_E15CF6F7E2B64F7494F2113E8D8EC885"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -112,12 +204,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3F26B061C62B4DC78FB75E16147240C2"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2AB84BF3E09D48C2BCD934C6193107CD"
             {
-            "SourcePath" = "8:..\\ChromeExtension\\host\\uninstall_host.bat"
-            "TargetName" = "8:uninstall_host.bat"
+            "SourcePath" = "8:..\\ChromeExtension\\app\\popup.js"
+            "TargetName" = "8:popup.js"
             "Tag" = "8:"
-            "Folder" = "8:_C2F59E94B5E0483B9787F444751433E2"
+            "Folder" = "8:_7064183DA7E7454CBAEE8D58B0AE76E7"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -132,12 +224,192 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_5D5DC3F894474A339DA43E92E974F368"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2C8A85CB6C864143948E360040121807"
+            {
+            "SourcePath" = "8:..\\ChromeExtension\\app\\manifest.json"
+            "TargetName" = "8:manifest.json"
+            "Tag" = "8:"
+            "Folder" = "8:_7064183DA7E7454CBAEE8D58B0AE76E7"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2EB3210F40E24CA7BB25BF1D1F3762B8"
+            {
+            "SourcePath" = "8:..\\ChromeExtension\\app\\main.js"
+            "TargetName" = "8:main.js"
+            "Tag" = "8:"
+            "Folder" = "8:_7064183DA7E7454CBAEE8D58B0AE76E7"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2EFEB4638FBE442D91FBF9F7DE79341D"
             {
             "SourcePath" = "8:..\\ChromeExtension\\host\\install_host.bat"
             "TargetName" = "8:install_host.bat"
             "Tag" = "8:"
-            "Folder" = "8:_C2F59E94B5E0483B9787F444751433E2"
+            "Folder" = "8:_E15CF6F7E2B64F7494F2113E8D8EC885"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_626FA993EC774BCE81A8A852697900C6"
+            {
+            "SourcePath" = "8:..\\ChromeExtension\\app\\popup.html"
+            "TargetName" = "8:popup.html"
+            "Tag" = "8:"
+            "Folder" = "8:_7064183DA7E7454CBAEE8D58B0AE76E7"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9DD7DD0E4A1F46C3AEE7D56A5AEADAD3"
+            {
+            "SourcePath" = "8:..\\ChromeExtension\\host\\uninstall_host.bat"
+            "TargetName" = "8:uninstall_host.bat"
+            "Tag" = "8:"
+            "Folder" = "8:_E15CF6F7E2B64F7494F2113E8D8EC885"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_AB574585C2624AD9B54639EBBC1C16B6"
+            {
+            "SourcePath" = "8:..\\ChromeExtension\\app\\icon-128.png"
+            "TargetName" = "8:icon-128.png"
+            "Tag" = "8:"
+            "Folder" = "8:_7064183DA7E7454CBAEE8D58B0AE76E7"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C209C03C9B9D480EB63DD23C64E10B08"
+            {
+            "SourcePath" = "8:..\\ChromeExtension\\host\\postInstall.vbs"
+            "TargetName" = "8:postInstall.vbs"
+            "Tag" = "8:"
+            "Folder" = "8:_E15CF6F7E2B64F7494F2113E8D8EC885"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CAFBE0DD6B1B483F87B5C3DED5261AF8"
+            {
+            "SourcePath" = "8:..\\ChromeExtension\\app\\background.js"
+            "TargetName" = "8:background.js"
+            "Tag" = "8:"
+            "Folder" = "8:_7064183DA7E7454CBAEE8D58B0AE76E7"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D4B6897570D94C65AD48537C0F0C3E32"
+            {
+            "SourcePath" = "8:..\\ChromeExtension\\app\\main.html"
+            "TargetName" = "8:main.html"
+            "Tag" = "8:"
+            "Folder" = "8:_7064183DA7E7454CBAEE8D58B0AE76E7"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EBA6A7ECBB1E44AAB2AAC7874D01C403"
+            {
+            "SourcePath" = "8:..\\ChromeExtension\\app\\alert.js"
+            "TargetName" = "8:alert.js"
+            "Tag" = "8:"
+            "Folder" = "8:_7064183DA7E7454CBAEE8D58B0AE76E7"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -176,6 +448,50 @@
                     "Property" = "8:_808C737818C8473EB99014022ED08EF0"
                         "Folders"
                         {
+                            "{9EF0B969-E518-4E46-987F-47570745A589}:_CFF35CCA2B804E048AC63AEF7336422F"
+                            {
+                            "Name" = "8:native"
+                            "AlwaysCreate" = "11:FALSE"
+                            "Condition" = "8:"
+                            "Transitive" = "11:FALSE"
+                            "Property" = "8:_CEFA1C2DE7E64B34972C2B2619716B7F"
+                                "Folders"
+                                {
+                                }
+                            }
+                            "{9EF0B969-E518-4E46-987F-47570745A589}:_EF7A485C52E948C98C689D3A717A9315"
+                            {
+                            "Name" = "8:extension"
+                            "AlwaysCreate" = "11:FALSE"
+                            "Condition" = "8:"
+                            "Transitive" = "11:FALSE"
+                            "Property" = "8:_021C42F54CDD4AC6A842FDF667193457"
+                                "Folders"
+                                {
+                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_7064183DA7E7454CBAEE8D58B0AE76E7"
+                                    {
+                                    "Name" = "8:app"
+                                    "AlwaysCreate" = "11:FALSE"
+                                    "Condition" = "8:"
+                                    "Transitive" = "11:FALSE"
+                                    "Property" = "8:_B2BEAB72FFF441D7AE3F210308BA1E00"
+                                        "Folders"
+                                        {
+                                        }
+                                    }
+                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_E15CF6F7E2B64F7494F2113E8D8EC885"
+                                    {
+                                    "Name" = "8:host"
+                                    "AlwaysCreate" = "11:FALSE"
+                                    "Condition" = "8:"
+                                    "Transitive" = "11:FALSE"
+                                    "Property" = "8:_C5CCA1F95B974E608B95F36D6793183E"
+                                        "Folders"
+                                        {
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -242,7 +558,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:ValerusChromeExtSetup"
         "ProductCode" = "8:{4F1B5E35-3937-4628-9AFB-34F5C3E3CE42}"
-        "PackageCode" = "8:{CF80D7CD-6BDF-4D71-9F09-AF974A1E7AFF}"
+        "PackageCode" = "8:{0CC66020-CE8F-4949-AEB4-CA78E7A82276}"
         "UpgradeCode" = "8:{5F757E87-E29A-42EF-85E8-C02E0281AB4A}"
         "AspNetVersion" = "8:"
         "RestartWWWService" = "11:FALSE"
@@ -761,12 +1077,12 @@
         }
         "ProjectOutput"
         {
-            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_73E817BE7C7642668C47CDB50EA6EC0D"
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_A5BE13B7F10C4936947FE0696102E37B"
             {
-            "SourcePath" = "8:..\\Debug\\ValrusIEEngine.exe"
+            "SourcePath" = "8:..\\Release\\ValrusIEEngine.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
-            "Folder" = "8:_5698E4AE017A4F5C82EB256D6E76EB42"
+            "Folder" = "8:_CFF35CCA2B804E048AC63AEF7336422F"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
