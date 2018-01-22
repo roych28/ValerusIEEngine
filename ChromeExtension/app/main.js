@@ -7,8 +7,8 @@ var IEPage = {
 	currentWindowPos: {x:-1,y:-1},
 	urlToSend: "http://47.21.44.216/", // default url
 	initialize: function(){
-		window.addEventListener("resize", 	 this.onResizeNativeMessaging);
-		window.addEventListener("mousemove", this.onMoveNativeMessaging);
+		window.addEventListener("resize", 	 this.onResizeNativeMessaging.bind(this));
+		window.addEventListener("mousemove", this.onMoveNativeMessaging.bind(this));
 	
 		urlToSend = decodeURIComponent(this.getQueryParams("url"));
 		
@@ -21,8 +21,11 @@ var IEPage = {
 	},
 	stop: function(){
 		message = {"text": "#STOP#"};
-		this.port.postMessage(message);
-		console.log("Sent message: " + JSON.stringify(message));
+		if(this.port){
+			this.port.postMessage(message);
+			console.log("Sent message: " + JSON.stringify(message));
+		}
+		
 	},
 	connect: function() {
 	  console.log("Connecting to native messaging host " + this.hostName);
@@ -69,10 +72,14 @@ var IEPage = {
 		}.bind(this));
 	},
 	onActivated: function(){
-		this.port.postMessage({text: '#SHOW#'});
+		if(this.port){
+			this.port.postMessage({text: '#SHOW#'});
+		}
 	},
 	onDeactivated: function(){
-		this.port.postMessage({text: '#HIDE#'});
+		if(this.port){
+			this.port.postMessage({text: '#HIDE#'});
+		}
 	},
 	onDisconnected: function() {
 		console.log("onDisconnected : " + chrome.runtime.lastError.message);
@@ -102,7 +109,9 @@ var IEPage = {
 					"y"		 : this.currentWindowPos.y			
 			};
 		
-			this.port.postMessage(message);
+			if(this.port){
+				this.port.postMessage(message);
+			}
 			console.log("Sent message: " + JSON.stringify(message));
 		}	
 	},
@@ -113,8 +122,10 @@ var IEPage = {
 					"x"		 : this.currentWindowPos.x,
 					"y"		 : this.currentWindowPos.y 
 		};
-		this.port.postMessage(message);
-		console.log("Sent message: " + JSON.stringify(message));
+		if(this.port){
+			this.port.postMessage(message);
+			console.log("Sent message: " + JSON.stringify(message));
+		}
 	},
 	initNativeMessaging: function(e) {
 		message = {	"text": "#INIT#",

@@ -7,7 +7,7 @@
     <ROW Property="AI_BITMAP_DISPLAY_MODE" Value="0"/>
     <ROW Property="ALLUSERS" Value="1"/>
     <ROW Property="ARPCOMMENTS" Value="This installer database contains the logic and data required to install [|ProductName]." ValueLocId="*"/>
-    <ROW Property="ARPNOMODIFY" Value="1" MultiBuildValue="DefaultBuild:"/>
+    <ROW Property="ARPNOMODIFY" Value="1"/>
     <ROW Property="LIMITUI" Value="1"/>
     <ROW Property="Manufacturer" Value="Vicon"/>
     <ROW Property="ProductCode" Value="1037:{08FD39CF-095A-469D-8979-4A8BEDB75DF0} " Type="16"/>
@@ -64,7 +64,7 @@
     <ROW BootstrOptKey="GlobalOptions" DownloadFolder="[AppDataFolder][|Manufacturer]\[|ProductName]\prerequisites" Options="2"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.BuildComponent">
-    <ROW BuildKey="DefaultBuild" BuildName="DefaultBuild" BuildOrder="1" BuildType="1" PackageFolder="..\..\..\..\Documents\Advanced Installer\Projects\ValerusChromeExt\Setup Files" Languages="he" InstallationType="4" UseLargeSchema="true"/>
+    <ROW BuildKey="DefaultBuild" BuildName="DefaultBuild" BuildOrder="1" BuildType="1" PackageFolder="..\..\..\Documents\Advanced Installer\Projects\ValerusChromeExt\Setup Files" Languages="he" InstallationType="4" UseLargeSchema="true"/>
     <ROW BuildKey="x64_Release" BuildName="x64_Release" BuildOrder="3" BuildType="1" PackageFileName="x64_Release" Languages="he" InstallationType="4" UseLargeSchema="true"/>
     <ROW BuildKey="x86_Debug" BuildName="x86_Debug" BuildOrder="2" BuildType="1" PackageFileName="x86_Debug" Languages="he" InstallationType="4" UseLargeSchema="true"/>
     <ROW BuildKey="x86_Release" BuildName="x86_Release" BuildOrder="4" BuildType="1" PackageFileName="x86_Release" Languages="he" InstallationType="4" UseLargeSchema="true"/>
@@ -97,6 +97,7 @@
     <ROW Name="TxtUpdater.dll" SourcePath="&lt;AI_CUSTACTS&gt;TxtUpdater.dll"/>
     <ROW Name="aicustact.dll" SourcePath="&lt;AI_CUSTACTS&gt;aicustact.dll"/>
     <ROW Name="viewer.exe" SourcePath="&lt;AI_CUSTACTS&gt;viewer.exe"/>
+    <ROW Name="viewer.exe_1" SourcePath="&lt;AI_CUSTACTS64&gt;viewer.exe"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiControlEventComponent">
     <ROW Dialog_="WelcomeDlg" Control_="Next" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL" Ordering="1"/>
@@ -136,7 +137,7 @@
     <ROW Action="AI_TxtUpdaterConfig" Type="11265" Source="TxtUpdater.dll" Target="OnTxtUpdaterConfig" WithoutSeq="true"/>
     <ROW Action="AI_TxtUpdaterInstall" Type="1" Source="TxtUpdater.dll" Target="OnTxtUpdaterInstall"/>
     <ROW Action="AI_TxtUpdaterRollback" Type="11521" Source="TxtUpdater.dll" Target="OnTxtUpdaterRollback" WithoutSeq="true"/>
-    <ROW Action="Install_host" Type="66" Source="viewer.exe" Target="/HideWindow &quot;[#install_host.bat]&quot;" Options="1"/>
+    <ROW Action="Install_host" Type="3650" Source="viewer.exe_1" Target="/RunAsAdmin /HideWindow &quot; [#install_host.bat]&quot;" Options="1"/>
     <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]"/>
     <ROW Action="SET_SHORTCUTDIR" Type="307" Source="SHORTCUTDIR" Target="[ProgramMenuFolder][ProductName]"/>
     <ROW Action="SET_TARGETDIR_TO_APPDIR" Type="51" Source="TARGETDIR" Target="[APPDIR]"/>
@@ -178,7 +179,7 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.TxtUpdateComponent">
     <ROW Name="Replace" TxtUpdateSet="pdatePath.txt" FindPattern="NATIVE_EXE_PATH" ReplacePattern="[native_Dir]ValrusIEEngine.exe" Options="2" Order="0" FileEncoding="-1"/>
-    <ROW Name="Replace_1" TxtUpdateSet="pdatePath.txt" FindPattern="\" ReplacePattern="\\" Options="2" Order="1" FileEncoding="-1"/>
+    <ROW Name="Replace_slash" TxtUpdateSet="pdatePath.txt" FindPattern="\" ReplacePattern="/" Options="2" Order="1" FileEncoding="-1"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.TxtUpdateSetComponent">
     <ROW Key="pdatePath.txt" Component="com.vicon.valerus.app.json" FileName="com.vicon.valerus.app.json" Directory="host_Dir" Options="9"/>
