@@ -15,8 +15,8 @@ var IEPage = {
 		chrome.tabs.getCurrent(function(tab) {
             this.tabId = tab.id;
             this.windowId = tab.windowId;
-			this.connect();	
-			//this.initEvents();				
+			this.connect();
+			this.initEvents();			
         }.bind(this));
 	},
 	stop: function(){
@@ -34,7 +34,7 @@ var IEPage = {
 	  this.port.onMessage.addListener(this.onNativeMessage);
 	  this.port.onDisconnect.addListener(this.onDisconnected);
 	  
-	  //this.initNativeMessaging();
+	  this.initNativeMessaging();
 	},
 	initEvents: function(){
 		chrome.tabs.onActivated.addListener(function (activeInfo) {
@@ -86,12 +86,6 @@ var IEPage = {
 		this.port = null;
 	},
 	onNativeMessage: function(message) {
-		
-		switch(message.type){
-		case'#INIT#':
-			this.initEvents();
-			break;
-		}
 		console.log("Received message: " + JSON.stringify(message));
 	},
 	getQueryParams: function( name, url ) {
