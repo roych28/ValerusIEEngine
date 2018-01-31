@@ -99,7 +99,6 @@ void WebBrowser::SetRect(const RECT& _rc)
 }
 
 // ----- Control methods -----
-
 void WebBrowser::GoBack()
 {
 	this->webBrowser2->GoBack();
