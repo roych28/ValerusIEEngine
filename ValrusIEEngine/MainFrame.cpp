@@ -163,7 +163,9 @@ BOOL CALLBACK MainFrame::EnumWindowsProc(HWND hwnd, LPARAM lpParam)
 		This->hwndChrome = hwnd;
 		SetWindowLong(This->hwndChrome, GWL_STYLE, GetWindowLong(This->hwndChrome, GWL_STYLE) | WS_CLIPCHILDREN);
 		SetWindowLong(This->hWndMain, GWL_STYLE, GetWindowLong(This->hWndMain, GWL_STYLE) | WS_CLIPCHILDREN);
-		SetParent(This->hWndMain, This->hwndChrome);
+		//SetParent(This->hWndMain, This->hwndChrome);
+
+		return false;
 	}
 
 	return TRUE;
@@ -224,6 +226,10 @@ DWORD WINAPI MainFrame::PipelineThreadFunction(LPVOID lpParam)
 		else if (This->parsedValues["command"] == "#SHOW#")
 		{
 			This->SetIEWindowShow(true);
+		}
+		else if (This->parsedValues["command"] == "#CONNECTED#")
+		{
+			
 		}
 		else if (This->parsedValues["command"] == "#INIT#")
 		{

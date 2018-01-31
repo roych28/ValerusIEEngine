@@ -16,7 +16,6 @@ var IEPage = {
             this.tabId = tab.id;
             this.windowId = tab.windowId;
 			this.connect();
-			this.initEvents();			
         }.bind(this));
 	},
 	stop: function(){
@@ -28,13 +27,13 @@ var IEPage = {
 		
 	},
 	connect: function() {
-	  console.log("Connecting to native messaging host " + this.hostName);
+	  	console.log("Connecting to native messaging host " + this.hostName);
 	  
-	  this.port = chrome.runtime.connectNative(this.hostName);
-	  this.port.onMessage.addListener(this.onNativeMessage);
-	  this.port.onDisconnect.addListener(this.onDisconnected);
-	  
-	  this.initNativeMessaging();
+	  	this.port = chrome.runtime.connectNative(this.hostName);
+	  	this.port.onMessage.addListener(this.onNativeMessage.bind(this));
+	  	this.port.onDisconnect.addListener(this.onDisconnected.bind(this));
+
+        this.connectNativeMessaging();
 	},
 	initEvents: function(){
 		chrome.tabs.onActivated.addListener(function (activeInfo) {
@@ -86,6 +85,12 @@ var IEPage = {
 		this.port = null;
 	},
 	onNativeMessage: function(message) {
+		switch(message.type){
+			case"#CONNECTED#":
+                this.initNativeMessaging();
+                this.initEvents();
+                break;
+		}
 		console.log("Received message: " + JSON.stringify(message));
 	},
 	getQueryParams: function( name, url ) {
@@ -127,21 +132,36 @@ var IEPage = {
 			console.log("Sent message: " + JSON.stringify(message));
 		}
 	},
-	initNativeMessaging: function(e) {
-		message = {	"text": "#INIT#",
-					"width"  : window.innerWidth,
-					"height" : window.innerHeight,
-					"x"		 : this.currentWindowPos.x,
-					"y"		 : this.currentWindowPos.y,
-					"url"	 : urlToSend
-		};
+    initNativeMessaging: function() {
+        message = {	"text": "#INIT#",
+            "width"  : window.innerWidth,
+            "height" : window.innerHeight,
+            "x"		 : this.currentWindowPos.x,
+            "y"		 : this.currentWindowPos.y,
+            "url"	 : urlToSend
+        };
 
-		if(this.port){
-			this.port.postMessage(message);
-		}
+        if(this.port){
+            this.port.postMessage(message);
+        }
 
-		console.log("Sent message: " + JSON.stringify(message));
-	},
+        console.log("Sent message: " + JSON.stringify(message));
+    },
+    connectNativeMessaging: function() {
+        message = {	"text": "#CONNECTED#",
+            "width"  : window.innerWidth,
+            "height" : window.innerHeight,
+            "x"		 : this.currentWindowPos.x,
+            "y"		 : this.currentWindowPos.y,
+            "url"	 : urlToSend
+        };
+
+        if(this.port){
+            this.port.postMessage(message);
+        }
+
+        console.log("Sent message: " + JSON.stringify(message));
+    },
 	getWindowPos: function() {
 		var size = {x:-1, y:-1}; 
 
