@@ -161,8 +161,8 @@ BOOL CALLBACK MainFrame::EnumWindowsProc(HWND hwnd, LPARAM lpParam)
 	if (titleW.find(L"biaidifgnfeaniiiemaofgbgflffhgdn/main.html") != std::string::npos)
 	{
 		This->hwndChrome = hwnd;
-		//SetWindowLong(This->hwndChrome, GWL_STYLE, GetWindowLong(This->hwndChrome, GWL_STYLE) | WS_CLIPCHILDREN);
-		//SetWindowLong(This->hWndMain, GWL_STYLE, GetWindowLong(This->hWndMain, GWL_STYLE) | WS_CLIPCHILDREN);
+		SetWindowLong(This->hwndChrome, GWL_STYLE, GetWindowLong(This->hwndChrome, GWL_STYLE) | WS_CLIPCHILDREN);
+		SetWindowLong(This->hWndMain, GWL_STYLE, GetWindowLong(This->hWndMain, GWL_STYLE) | WS_CLIPCHILDREN);
 		SetParent(This->hWndMain, This->hwndChrome);
 
 		return false;
