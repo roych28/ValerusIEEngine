@@ -8,7 +8,7 @@ var IEPage = {
 	urlToSend: "http://47.21.44.216/", // default url
 	initialize: function(){
 		window.addEventListener("resize", 	 this.onResizeNativeMessaging.bind(this));
-		window.addEventListener("mousemove", this.onMoveNativeMessaging.bind(this));
+		//window.addEventListener("mousemove", this.onMoveNativeMessaging.bind(this));
 	
 		urlToSend = decodeURIComponent(this.getQueryParams("url"));
 		
@@ -85,14 +85,25 @@ var IEPage = {
 		this.port = null;
 	},
 	onNativeMessage: function(message) {
+        console.log("Received message: " + JSON.stringify(message));
 		switch(message.type){
 			case"#CONNECTED#":
                 this.initNativeMessaging();
                 this.initEvents();
                 break;
 		}
-		console.log("Received message: " + JSON.stringify(message));
 	},
+    getMessage: function(type){
+        var message = {	"text": type,
+            "width"  : this.getInnerWidth(),
+            "height" : this.getInnerHeight(),
+            "x"		 : this.currentWindowPos.x,
+            "y"		 : this.currentWindowPos.y,
+            "url"	 : urlToSend
+        };
+
+        return message;
+    },
 	getQueryParams: function( name, url ) {
 		if (!url) url = location.href;
 		name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
@@ -102,44 +113,35 @@ var IEPage = {
 		console.log('getQueryParams', results);
 		return results == null ? null : results[1];
 	},
-	onMoveNativeMessaging: function(e) {
+    getInnerWidth: function() {
+        return Math.floor(window.innerWidth * window.devicePixelRatio);
+    },
+    getInnerHeight: function() {
+        return Math.floor(window.innerHeight * window.devicePixelRatio);
+    },
+	/*onMoveNativeMessaging: function(e) {
 		var windowPos = this.getWindowPos();
 		
 		if( windowPos.x != this.currentWindowPos.x || this.currentWindowPos.y != this.currentWindowPos.y){
 			this.currentWindowPos = windowPos;
-			message = {	"text": "#ONMOVE#",
-					"width"  : window.innerWidth,
-					"height" : window.innerHeight,
-					"x"		 : this.currentWindowPos.x,
-					"y"		 : this.currentWindowPos.y			
-			};
-		
+            var message = this.getMessage('#ONMOVE#');
+
 			if(this.port){
 				this.port.postMessage(message);
 			}
+
 			console.log("Sent message: " + JSON.stringify(message));
 		}	
-	},
+	},*/
 	onResizeNativeMessaging: function(e) {
-		message = {	"text": "#ONRESIZE#",
-					"width"  : window.innerWidth,
-					"height" : window.innerHeight,
-					"x"		 : this.currentWindowPos.x,
-					"y"		 : this.currentWindowPos.y 
-		};
+        var message = this.getMessage('#ONRESIZE#');
 		if(this.port){
 			this.port.postMessage(message);
 			console.log("Sent message: " + JSON.stringify(message));
 		}
 	},
     initNativeMessaging: function() {
-        message = {	"text": "#INIT#",
-            "width"  : window.innerWidth,
-            "height" : window.innerHeight,
-            "x"		 : this.currentWindowPos.x,
-            "y"		 : this.currentWindowPos.y,
-            "url"	 : urlToSend
-        };
+        var message = this.getMessage('#INIT#');
 
         if(this.port){
             this.port.postMessage(message);
@@ -148,13 +150,7 @@ var IEPage = {
         console.log("Sent message: " + JSON.stringify(message));
     },
     connectNativeMessaging: function() {
-        message = {	"text": "#CONNECTED#",
-            "width"  : window.innerWidth,
-            "height" : window.innerHeight,
-            "x"		 : this.currentWindowPos.x,
-            "y"		 : this.currentWindowPos.y,
-            "url"	 : urlToSend
-        };
+        var message = this.getMessage('#CONNECTED#');
 
         if(this.port){
             this.port.postMessage(message);

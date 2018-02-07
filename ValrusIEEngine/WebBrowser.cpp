@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "WebBrowser.h"
+#include "EventLog.h"
 
 WebBrowser::WebBrowser(HWND _hWndParent)
 {
@@ -119,7 +120,10 @@ void WebBrowser::Navigate(wstring szUrl)
 {
 	bstr_t url(szUrl.c_str());
 	variant_t flags(0x02u); //navNoHistory
-    this->webBrowser2->Navigate(url, &flags, 0, 0, 0);
+    HRESULT res = this->webBrowser2->Navigate(url, &flags, 0, 0, 0);
+
+	std::wstring resStr = std::to_wstring(res);
+	log_event_log_message(L"WebBrowser::Navigate res: " + resStr, EVENTLOG_INFORMATION_TYPE, event_log_source_name);
 }
 
 // ----- IUnknown -----

@@ -8,6 +8,7 @@
 
 #include "WebBrowser.h"
 #include "ProcessMessage.h"
+#include "EventLog.h"
 
 MainFrame* This = NULL;
 
@@ -25,17 +26,25 @@ MainFrame::MainFrame(HINSTANCE hInst)
 	threadHandle = INVALID_HANDLE_VALUE;
 
 	This = this;
+
+	log_event_log_message(L"MainFrame Ctor", EVENTLOG_INFORMATION_TYPE,	event_log_source_name);
 }
 
 MainFrame::~MainFrame()
 {
 	delete webBrowser;
+
+	log_event_log_message(L"MainFrame Dtor", EVENTLOG_INFORMATION_TYPE,	event_log_source_name);
 }
 
 bool MainFrame::Init()
 {
+	log_event_log_message(L"MainFrame::Init ->", EVENTLOG_INFORMATION_TYPE,	event_log_source_name);
+
 	if (!RegMainClass())
 	{
+		log_event_log_message(L"MainFrame::Init RegMainClass failed", EVENTLOG_ERROR_TYPE, event_log_source_name);
+
 		return false;
 	}
 
@@ -43,7 +52,7 @@ bool MainFrame::Init()
 		szWndTitleMain,
 		WS_POPUP | WS_VISIBLE,
 		0, 0,
-		99, 99,
+		1, 1,
 		NULL, NULL, hInst, NULL);
 
 	SetIEWindowShow(false);
@@ -88,13 +97,19 @@ LRESULT CALLBACK MainFrame::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 			rc.right = rcClient.right;
 			rc.bottom = rcClient.bottom;
 			if (This->webBrowser != 0)
+			{
 				This->webBrowser->SetRect(rc);
+				log_event_log_message(L"MainFrame::WndProc WM_SIZE", EVENTLOG_INFORMATION_TYPE, event_log_source_name);
+			}
+				
 		}
 		break;
 	case WM_DESTROY:
 		This->quitThreadPipe = true;
 		WaitForSingleObject(This->threadHandle, INFINITE);
 		CloseHandle(This->threadHandle);
+
+		log_event_log_message(L"MainFrame::WndProc WM_DESTROY", EVENTLOG_INFORMATION_TYPE, event_log_source_name);
 		ExitProcess(0);
 		break;
 	default:
@@ -134,11 +149,11 @@ void MainFrame::SetIEWindowSize()
 
 	if (rcWind.left == -8 && rcWind.top == -8)
 	{
-		SetWindowPos(hWndMain, HWND_TOP, rcClient.left, (rcWind.bottom - rcWind.top) - height - ptDiff.y, (rcWind.right - rcWind.left) - ptDiff.x, rcClient.bottom - ptDiff.y, SWP_NOREDRAW);
+		SetWindowPos(hWndMain, HWND_TOP, rcClient.left, (rcWind.bottom) - height, (rcWind.right - rcWind.left) - ptDiff.x, rcClient.bottom - ptDiff.y, SWP_NOREDRAW);
 	}
 	else
 	{
-		SetWindowPos(hWndMain, HWND_TOP, 2, (rcWind.bottom - rcWind.top) - height - ptDiff.y * 2, rcClient.right - ptDiff.x / 2 + 1, rcClient.bottom - ptDiff.y, SWP_NOREDRAW);
+		SetWindowPos(hWndMain, HWND_TOP, 1, (rcWind.bottom - rcWind.top) - height - ptDiff.y, rcClient.right - 1, rcClient.bottom - ptDiff.y, SWP_NOREDRAW);
 	}
 }
 
@@ -158,14 +173,13 @@ BOOL CALLBACK MainFrame::EnumWindowsProc(HWND hwnd, LPARAM lpParam)
 	std::wstring titleW = title;
 	std::wstring classNameW = class_name;
 
-	if (titleW.find(L"biaidifgnfeaniiiemaofgbgflffhgdn/main.html") != std::string::npos)
+	if (titleW.find(L"omfoabjiohaoglgimheiknfmmlfdhpke/main.html") != std::string::npos)
 	{
-		This->hwndChrome = hwnd;
+		This->hwndChrome = hwnd;		
 		SetWindowLong(This->hwndChrome, GWL_STYLE, GetWindowLong(This->hwndChrome, GWL_STYLE) | WS_CLIPCHILDREN);
-		SetWindowLong(This->hWndMain, GWL_STYLE, GetWindowLong(This->hWndMain, GWL_STYLE) | WS_CLIPCHILDREN);
-		SetParent(This->hWndMain, This->hwndChrome);
-
-		return false;
+		SetWindowLong(This->hWndMain, GWL_STYLE, GetWindowLong(This->hWndMain, GWL_STYLE) | WS_CHILD | WS_CLIPCHILDREN);
+		::SetParent(This->hWndMain, This->hwndChrome);
+		log_event_log_message(L"MainFrame::EnumWindowsProc omfoabjiohaoglgimheiknfmmlfdhpke window founded", EVENTLOG_INFORMATION_TYPE, event_log_source_name);
 	}
 
 	return TRUE;
@@ -229,7 +243,7 @@ DWORD WINAPI MainFrame::PipelineThreadFunction(LPVOID lpParam)
 		}
 		else if (This->parsedValues["command"] == "#CONNECTED#")
 		{
-
+			EnumWindows(MainFrame::EnumWindowsProc, NULL);
 		}
 		else if (This->parsedValues["command"] == "#ONMOVE#")
 		{
@@ -239,10 +253,11 @@ DWORD WINAPI MainFrame::PipelineThreadFunction(LPVOID lpParam)
 		{
 			std::string url = This->parsedValues["url"];
 			std::wstring urlW = std::wstring(url.begin(), url.end());
-			EnumWindows(MainFrame::EnumWindowsProc, NULL);
 			This->SetIEWindowShow(true);
 			This->SetIEWindowSize();
 			This->webBrowser->Navigate(urlW);
+
+			log_event_log_message(L"#INIT# navigate to " + urlW, EVENTLOG_INFORMATION_TYPE, event_log_source_name);
 		}
 
 		unsigned int len = message.length();
@@ -256,3 +271,9 @@ DWORD WINAPI MainFrame::PipelineThreadFunction(LPVOID lpParam)
 	}
 	return 0;
 }
+
+//HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings\ZoneMap\ProxyBypass
+//HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings\ZoneMap\IntranetName
+//HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings\ZoneMap\UNCAsIntranet
+//HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings\ZoneMap\AutoDetect
+
