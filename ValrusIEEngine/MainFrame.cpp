@@ -9,6 +9,7 @@
 #include "WebBrowser.h"
 #include "ProcessMessage.h"
 #include "EventLog.h"
+#include "Utils.h"
 
 MainFrame* This = NULL;
 
@@ -83,6 +84,7 @@ bool MainFrame::Init()
 
 LRESULT CALLBACK MainFrame::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+	DLog(L"WndProc %hs\r\n", Utils::getMessageAsString(uMsg));
 	switch (uMsg)
 	{
 	case WM_SIZE:
@@ -112,11 +114,9 @@ LRESULT CALLBACK MainFrame::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 		log_event_log_message(L"MainFrame::WndProc WM_DESTROY", EVENTLOG_INFORMATION_TYPE, event_log_source_name);
 		ExitProcess(0);
 		break;
-	default:
-		return DefWindowProc(hWnd, uMsg, wParam, lParam);
 	}
 
-	return 0;
+	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
 WORD MainFrame::RegMainClass()
@@ -176,9 +176,26 @@ BOOL CALLBACK MainFrame::EnumWindowsProc(HWND hwnd, LPARAM lpParam)
 	if (titleW.find(L"omfoabjiohaoglgimheiknfmmlfdhpke/main.html") != std::string::npos)
 	{
 		This->hwndChrome = hwnd;		
-		SetWindowLong(This->hwndChrome, GWL_STYLE, GetWindowLong(This->hwndChrome, GWL_STYLE) | WS_CLIPCHILDREN);
-		SetWindowLong(This->hWndMain, GWL_STYLE, GetWindowLong(This->hWndMain, GWL_STYLE) | WS_CHILD | WS_CLIPCHILDREN);
+		//SetWindowLong(This->hwndChrome, GWL_STYLE, GetWindowLong(This->hwndChrome, GWL_STYLE) | WS_CLIPCHILDREN);
+		//SetWindowLong(This->hWndMain, GWL_STYLE, GetWindowLong(This->hWndMain, GWL_STYLE) | WS_CHILD | WS_CLIPCHILDREN);
+		
+		
+		DWORD style = GetWindowLong(This->hWndMain, GWL_STYLE);
+		style = style & ~(WS_POPUP);
+		style = style | WS_CHILD | WS_CLIPCHILDREN;
+		SetWindowLong(This->hWndMain, GWL_STYLE, style);
+
 		::SetParent(This->hWndMain, This->hwndChrome);
+
+		::SendMessage(This->hwndChrome, WM_CHANGEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEACCEL), NULL);
+		::SendMessage(This->hWndMain, WM_CHANGEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEACCEL), NULL);
+		//::SendMessage(This->hwndChrome, WM_UPDATEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEFOCUS), 0);
+		//::SendMessage(This->hWndMain, WM_UPDATEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEFOCUS), 0);
+		//::UpdateWindow(This->hwndChrome);
+		//::UpdateWindow(This->hWndMain);
+		//::RedrawWindow(This->hwndChrome, NULL, NULL, RDW_ALLCHILDREN);
+		//::RedrawWindow(This->hWndMain, NULL, NULL, RDW_ALLCHILDREN);
+		//::InvalidateRect(This->hwndChrome,)
 		log_event_log_message(L"MainFrame::EnumWindowsProc omfoabjiohaoglgimheiknfmmlfdhpke window founded", EVENTLOG_INFORMATION_TYPE, event_log_source_name);
 	}
 
