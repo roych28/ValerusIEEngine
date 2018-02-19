@@ -1,0 +1,75 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    clear: both;
+    height: 100%;
+    width: 100%;
+
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:14px;line-height:1.42857143;color:#333
+}
+
+.options-body {
+    background-color: #192028;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.options-container {
+    height: 100%;
+    overflow: hidden;
+    min-width: 1200px;
+    min-height: 800px;
+    background-color: #2A3138;
+}
+
+.options-frame{
+    position: absolute;
+    top: 370px;
+    width: 540px;
+    min-width: 500px;
+    left: 22%;
+}
+
+.gray-background-input{
+    font-size:14px;
+    font-family:Arial;
+    min-width:52px;
+    box-shadow:none;
+    width:300px;
+    outline:0;
+    font-weight:400;
+    height:35px;
+    line-height:35px;
+    border:0;
+    border-radius:0;
+    background-color:#636871!important;
+    color:#eaeaea!important;
+    padding:0 10px 0 0
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+    box-sizing: border-box;         /* Opera/IE 8+ */
+}
+
+.options-button-container{
+    margin-top: 18px;
+}
+
+.blue-button-new-ui{
+    background-color: #295287;
+    border-radius: 0;
+    height: 39px;
+    padding: 0 18px;
+    border: none;
+    width: 300px;
+}
+
+.blue-button-new-ui:hover{
+    background-color:#22446f;
+}
+.blue-button-new-ui:active{
+    background-color:#1b406c;opacity:.8;
+}
+.blue-button-new-ui:disabled{
+    background-color:#363b45;
+}

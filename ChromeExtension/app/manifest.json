@@ -18,9 +18,11 @@
   "icons": {
     "128": "icon-128.png"
   },
+  "options_page": "options.html",
   "permissions": [
     "nativeMessaging",
 	"tabs",
-	"activeTab"
+	"activeTab",
+    "storage"
   ]
 }
