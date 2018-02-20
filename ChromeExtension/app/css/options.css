@@ -26,17 +26,18 @@ body, html {
 .options-frame{
     position: absolute;
     top: 370px;
-    width: 540px;
-    min-width: 500px;
-    left: 22%;
+    width: 350px;
+    left: 30%;
+    text-align: center;
 }
 
-.gray-background-input{
+.url-input{
     font-size:14px;
     font-family:Arial;
     min-width:52px;
     box-shadow:none;
     width:300px;
+    float: right;
     outline:0;
     font-weight:400;
     height:35px;
@@ -45,10 +46,14 @@ body, html {
     border-radius:0;
     background-color:#636871!important;
     color:#eaeaea!important;
-    padding:0 10px 0 0
+    padding:0 10px 0 0;
     -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
     -moz-box-sizing: border-box;    /* Firefox, other Gecko */
     box-sizing: border-box;         /* Opera/IE 8+ */
+}
+
+.margin-top-url{
+
 }
 
 .options-button-container{
@@ -62,6 +67,8 @@ body, html {
     padding: 0 18px;
     border: none;
     width: 300px;
+    float: right;
+    margin-top: 10px;
 }
 
 .blue-button-new-ui:hover{
