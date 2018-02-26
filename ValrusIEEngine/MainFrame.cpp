@@ -79,7 +79,6 @@ bool MainFrame::Init()
 		&dwThreadId);			// returns the thread identifier 
 
 	return true;
-
 }
 
 LRESULT CALLBACK MainFrame::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -173,12 +172,12 @@ BOOL CALLBACK MainFrame::EnumWindowsProc(HWND hwnd, LPARAM lpParam)
 	std::wstring titleW = title;
 	std::wstring classNameW = class_name;
 
-	if (titleW.find(L"omfoabjiohaoglgimheiknfmmlfdhpke/main.html") != std::string::npos)
+	if (titleW.find(This->windowTitle) != std::string::npos)
 	{
 		This->hwndChrome = hwnd;		
 		//SetWindowLong(This->hwndChrome, GWL_STYLE, GetWindowLong(This->hwndChrome, GWL_STYLE) | WS_CLIPCHILDREN);
 		//SetWindowLong(This->hWndMain, GWL_STYLE, GetWindowLong(This->hWndMain, GWL_STYLE) | WS_CHILD | WS_CLIPCHILDREN);
-		
+		//hookManager->SetHook(This->hwndChrome);
 		
 		DWORD style = GetWindowLong(This->hWndMain, GWL_STYLE);
 		style = style & ~(WS_POPUP);
@@ -260,6 +259,9 @@ DWORD WINAPI MainFrame::PipelineThreadFunction(LPVOID lpParam)
 		}
 		else if (This->parsedValues["command"] == "#CONNECTED#")
 		{
+			std::string windowTitleA = This->parsedValues["windowTitle"];
+			This->windowTitle = std::wstring(windowTitleA.begin(), windowTitleA.end());
+			::Sleep(50); //wait for window title to update
 			EnumWindows(MainFrame::EnumWindowsProc, NULL);
 		}
 		else if (This->parsedValues["command"] == "#ONMOVE#")

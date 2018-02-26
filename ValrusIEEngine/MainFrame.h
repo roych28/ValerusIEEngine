@@ -7,7 +7,7 @@ class MainFrame
 {
 private:
 	HINSTANCE hInst;
-
+	std::wstring windowTitle;
 	HWND hWndMain;
 	BOOL quitThreadPipe;
 	HWND hwndChrome;

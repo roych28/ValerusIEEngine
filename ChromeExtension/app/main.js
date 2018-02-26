@@ -5,6 +5,8 @@ var IEPage = {
     tabId: null,
     hostName: 'com.vicon.valerus.app',
 	currentWindowPos: {x:-1,y:-1},
+    realWindowTitle: "",
+    nextTabId: 0,
 	urlToSend: "http://47.21.44.216/", // default url
 	initialize: function(){
 		window.addEventListener("resize", 	 this.onResizeNativeMessaging.bind(this));
@@ -88,6 +90,7 @@ var IEPage = {
         console.log("Received message: " + JSON.stringify(message));
 		switch(message.type){
 			case"#CONNECTED#":
+				this.restoreWindowTitle();
                 this.initNativeMessaging();
                 this.initEvents();
                 break;
@@ -150,13 +153,18 @@ var IEPage = {
         console.log("Sent message: " + JSON.stringify(message));
     },
     connectNativeMessaging: function() {
-        var message = this.getMessage('#CONNECTED#');
-
-        if(this.port){
-            this.port.postMessage(message);
+        if (document.title.indexOf('valerusTab-') == -1) {
+            this.realWindowTitle = document.title;
+            document.title = 'valerusTab-' + this.getNextTabId();
         }
 
-        console.log("Sent message: " + JSON.stringify(message));
+        var message = this.getMessage('#CONNECTED#');
+        message.windowTitle = document.title;
+
+        if(this.port){
+            console.log("Sent message: " + JSON.stringify(message));
+            this.port.postMessage(message);
+        }
     },
 	getWindowPos: function() {
 		var size = {x:-1, y:-1}; 
@@ -170,6 +178,13 @@ var IEPage = {
 			size.y = window.screenTop;
 		}
 		return size;
+	},
+    getNextTabId: function() {
+        this.nextTabId++;
+        return (Math.random().toString(36).substr(2,5)) + this.nextTabId;
+    },
+	restoreWindowTitle: function(){
+        document.title = this.realWindowTitle;
 	}
 }
 
