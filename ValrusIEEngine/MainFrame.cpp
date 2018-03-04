@@ -10,8 +10,10 @@
 #include "ProcessMessage.h"
 #include "EventLog.h"
 #include "Utils.h"
+#include "HookHwndManager.h"
 
 MainFrame* This = NULL;
+HookHwndManager *hookManager = new HookHwndManager();
 
 TCHAR* szWndTitleMain = _T("valerus ie wrapper");
 TCHAR* szWndClassMain = _T("main window wrapper");
@@ -178,7 +180,11 @@ BOOL CALLBACK MainFrame::EnumWindowsProc(HWND hwnd, LPARAM lpParam)
 		//SetWindowLong(This->hwndChrome, GWL_STYLE, GetWindowLong(This->hwndChrome, GWL_STYLE) | WS_CLIPCHILDREN);
 		//SetWindowLong(This->hWndMain, GWL_STYLE, GetWindowLong(This->hWndMain, GWL_STYLE) | WS_CHILD | WS_CLIPCHILDREN);
 		//hookManager->SetHook(This->hwndChrome);
-		
+		SetWindowLong(This->hwndChrome, GWL_EXSTYLE,
+			GetWindowLong(This->hwndChrome, GWL_EXSTYLE) | WS_EX_LAYERED);
+		SetWindowLong(This->hWndMain, GWL_EXSTYLE,
+			GetWindowLong(This->hWndMain, GWL_EXSTYLE) | WS_EX_LAYERED);
+
 		DWORD style = GetWindowLong(This->hWndMain, GWL_STYLE);
 		style = style & ~(WS_POPUP);
 		style = style | WS_CHILD | WS_CLIPCHILDREN;
@@ -186,10 +192,11 @@ BOOL CALLBACK MainFrame::EnumWindowsProc(HWND hwnd, LPARAM lpParam)
 
 		::SetParent(This->hWndMain, This->hwndChrome);
 
-		::SendMessage(This->hwndChrome, WM_CHANGEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEACCEL), NULL);
-		::SendMessage(This->hWndMain, WM_CHANGEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEACCEL), NULL);
+		//::SendMessage(This->hwndChrome, WM_CHANGEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEACCEL), NULL);
+		//::SendMessage(This->hWndMain, WM_CHANGEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEACCEL), NULL);
 		//::SendMessage(This->hwndChrome, WM_UPDATEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEFOCUS), 0);
 		//::SendMessage(This->hWndMain, WM_UPDATEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEFOCUS), 0);
+		::BringWindowToTop(This->hWndMain);
 		//::UpdateWindow(This->hwndChrome);
 		//::UpdateWindow(This->hWndMain);
 		//::RedrawWindow(This->hwndChrome, NULL, NULL, RDW_ALLCHILDREN);
@@ -261,7 +268,7 @@ DWORD WINAPI MainFrame::PipelineThreadFunction(LPVOID lpParam)
 		{
 			std::string windowTitleA = This->parsedValues["windowTitle"];
 			This->windowTitle = std::wstring(windowTitleA.begin(), windowTitleA.end());
-			::Sleep(50); //wait for window title to update
+			::Sleep(100); //wait for window title to update
 			EnumWindows(MainFrame::EnumWindowsProc, NULL);
 		}
 		else if (This->parsedValues["command"] == "#ONMOVE#")
