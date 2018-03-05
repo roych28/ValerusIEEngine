@@ -38,6 +38,14 @@ MainFrame::~MainFrame()
 	log_event_log_message(L"MainFrame Dtor", EVENTLOG_INFORMATION_TYPE,	event_log_source_name);
 }
 
+void updateIERegHKCU(std::wstring key, int val)
+{
+	std::wstring fullPathKey = L"Software\\Microsoft\\Internet Explorer\\Main\\FeatureControl\\" + key;
+	HKEY hKey = Utils::OpenKey(HKEY_CURRENT_USER, fullPathKey.c_str());
+	Utils::SetIntVal(hKey, L"ValrusIEEngine.exe", val);
+	RegCloseKey(hKey);
+}
+
 bool MainFrame::Init()
 {
 	log_event_log_message(L"MainFrame::Init ->", EVENTLOG_INFORMATION_TYPE,	event_log_source_name);
@@ -49,14 +57,14 @@ bool MainFrame::Init()
 		return false;
 	}
 
-	hWndMain = CreateWindowEx(0, szWndClassMain,
+	hWndMain = CreateWindowEx(WS_EX_TOPMOST, szWndClassMain,
 		szWndTitleMain,
 		WS_POPUP | WS_VISIBLE,
-		0, 0,
-		1, 1,
+		CW_USEDEFAULT, CW_USEDEFAULT,
+		CW_USEDEFAULT, CW_USEDEFAULT,
 		NULL, NULL, hInst, NULL);
 
-	SetIEWindowShow(false);
+	SetIEWindowShow(true);
 
 	RECT rcClient;
 	GetClientRect(hWndMain, &rcClient);
@@ -78,12 +86,44 @@ bool MainFrame::Init()
 		0,                      // use default creation flags 
 		&dwThreadId);			// returns the thread identifier 
 
+	//HKEY hKey = Utils::OpenKey(HKEY_LOCAL_MACHINE, L"Software\\Microsoft\\Internet Explorer\\Main\\FeatureControl\\FEATURE_BROWSER_EMULATION");
+	//Utils::SetIntVal(hKey, L"ValrusIEEngine.exe", 11000);
+	//RegCloseKey(hKey);
+
+	updateIERegHKCU(L"FEATURE_BROWSER_EMULATION", 11000);
+	updateIERegHKCU(L"FEATURE_96DPI_PIXEL", 1);
+	updateIERegHKCU(L"FEATURE_BEHAVIORS", 1);
+	updateIERegHKCU(L"FEATURE_DISABLE_MK_PROTOCOL", 1);
+	updateIERegHKCU(L"FEATURE_DISABLE_SQM_UPLOAD_FOR_APP", 1);
+	updateIERegHKCU(L"FEATURE_INTERNET_SHELL_FOLDERS", 1);
+	updateIERegHKCU(L"FEATURE_LEGACY_DLCONTROL_BEHAVIORS", 1);
+	updateIERegHKCU(L"FEATURE_LOCALMACHINE_LOCKDOWN", 1);
+	updateIERegHKCU(L"FEATURE_MIME_HANDLING", 1);
+	updateIERegHKCU(L"FEATURE_MIME_SNIFFING", 1);
+	updateIERegHKCU(L"FEATURE_NINPUT_LEGACYMODE", 1);
+	updateIERegHKCU(L"FEATURE_OBJECT_CACHING", 1);
+	updateIERegHKCU(L"FEATURE_PROTOCOL_LOCKDOWN", 1);
+	updateIERegHKCU(L"FEATURE_RESTRICT_ACTIVEXINSTALL", 1);
+	updateIERegHKCU(L"FEATURE_SAFE_BINDTOOBJECT", 1);
+	updateIERegHKCU(L"FEATURE_SCRIPTURL_MITIGATION", 1);
+	updateIERegHKCU(L"FEATURE_SECURITYBAND", 1);
+
+	updateIERegHKCU(L"FEATURE_SPELLCHECKING", 0);
+	updateIERegHKCU(L"FEATURE_TABBED_BROWSING", 0);
+	updateIERegHKCU(L"FEATURE_USE_WEBOC_OMNAVIGATOR_IMPLEMENTATION", 0);
+	
+	updateIERegHKCU(L"FEATURE_WEBOC_DOCUMENT_ZOOM", 1);
+	updateIERegHKCU(L"FEATURE_WEBOC_POPUPMANAGEMENT", 1);
+	updateIERegHKCU(L"FEATURE_WINDOW_RESTRICTIONS", 1);
+	updateIERegHKCU(L"FEATURE_XSSFILTER", 1);
+	updateIERegHKCU(L"FEATURE_ZONE_ELEVATION", 1);
+
 	return true;
 }
 
 LRESULT CALLBACK MainFrame::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	DLog(L"WndProc %hs\r\n", Utils::getMessageAsString(uMsg));
+	//DLog(L"WndProc %ws\r\n", Utils::getMessageAsString(uMsg));
 	switch (uMsg)
 	{
 	case WM_SIZE:
@@ -105,6 +145,22 @@ LRESULT CALLBACK MainFrame::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 				
 		}
 		break;
+	case WM_SHOWWINDOW:
+		if (This->webBrowser != 0)
+		{
+			This->webBrowser->ShowObject();
+		}
+		break;
+	case WM_PAINT:
+
+		break;
+	case WM_SYSCOLORCHANGE:
+
+		break;
+	case WM_WINDOWPOSCHANGING:
+
+		break;
+		
 	case WM_DESTROY:
 		This->quitThreadPipe = true;
 		WaitForSingleObject(This->threadHandle, INFINITE);
@@ -146,19 +202,75 @@ void MainFrame::SetIEWindowSize()
 	ptDiff.x = (rcWind.right - rcWind.left) - rcClient.right;
 	ptDiff.y = (rcWind.bottom - rcWind.top) - rcClient.bottom;
 
+	SetWindowPos(hwndChrome, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+
 	if (rcWind.left == -8 && rcWind.top == -8)
 	{
-		SetWindowPos(hWndMain, HWND_TOP, rcClient.left, (rcWind.bottom) - height, (rcWind.right - rcWind.left) - ptDiff.x, rcClient.bottom - ptDiff.y, SWP_NOREDRAW);
+		SetWindowPos(hWndMain, HWND_TOP, rcClient.left, (rcWind.bottom) - height, (rcWind.right - rcWind.left) - ptDiff.x, rcClient.bottom - ptDiff.y, SWP_SHOWWINDOW);
 	}
 	else
 	{
-		SetWindowPos(hWndMain, HWND_TOP, 1, (rcWind.bottom - rcWind.top) - height - ptDiff.y, rcClient.right - 1, rcClient.bottom - ptDiff.y, SWP_NOREDRAW);
+		SetWindowPos(hWndMain, HWND_TOP, 1, (rcWind.bottom - rcWind.top) - height - ptDiff.y, rcClient.right - 1, rcClient.bottom - ptDiff.y, SWP_SHOWWINDOW);
 	}
+
+	UpdateWindow(hWndMain);
+	UpdateWindow(hwndChrome);
 }
 
 void MainFrame::SetIEWindowShow(bool visible)
 {
 	ShowWindow(hWndMain, visible ? SW_SHOW : SW_HIDE);
+	UpdateWindow(hWndMain);
+	UpdateWindow(hwndChrome);
+}
+
+int i = 0;
+
+BOOL CALLBACK MainFrame::EnumWindowsChildrenProc(HWND hwnd, LPARAM lpParam)
+{
+	TCHAR class_name[512];
+	TCHAR title[512];
+	GetClassName(hwnd, class_name, sizeof(class_name));
+	GetWindowText(hwnd, title, sizeof(title));		
+	
+	SetWindowPos(hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+
+	/*DWORD id = GetWindowLong(hwnd, GWL_ID);
+
+	OutputDebugStringA(std::to_string((LONG)id).c_str());
+	//RECT rcClient;
+	//GetClientRect(hwnd, &rcClient);
+	//::SetWindowPos(hwnd, HWND_NOTOPMOST, 0, 0, 1, 1, SW_HIDE);
+	i++;
+	if (i == 4)
+	{
+		//::SetParent(This->hWndMain, hwnd);
+		//::ShowWindow(hwnd, SW_HIDE);
+	}
+
+	/*HWND iehwnd = (HWND)0x00781520;
+	id = GetWindowLong(iehwnd, GWL_ID);
+	id = GetWindowLong(iehwnd, GWL_ID);
+	GetClassName(iehwnd, class_name, sizeof(class_name));
+	GetWindowText(iehwnd, title, sizeof(title));
+
+	HWND ieparent = GetParent(iehwnd);
+	GetClassName(ieparent, class_name, sizeof(class_name));
+	GetWindowText(ieparent, title, sizeof(title));
+
+	ieparent = GetParent(ieparent);
+	GetClassName(ieparent, class_name, sizeof(class_name));
+	GetWindowText(ieparent, title, sizeof(title));
+
+	ieparent = GetParent(ieparent);
+	GetClassName(ieparent, class_name, sizeof(class_name));
+	GetWindowText(ieparent, title, sizeof(title));
+
+	ieparent = GetParent(ieparent);
+	GetClassName(ieparent, class_name, sizeof(class_name));
+	GetWindowText(ieparent, title, sizeof(title));
+	//::SetForegroundWindow(hwnd);*/
+	return TRUE;
 }
 
 //callback that finds chrome and ie windows
@@ -174,27 +286,35 @@ BOOL CALLBACK MainFrame::EnumWindowsProc(HWND hwnd, LPARAM lpParam)
 
 	if (titleW.find(This->windowTitle) != std::string::npos)
 	{
-		This->hwndChrome = hwnd;		
-		//SetWindowLong(This->hwndChrome, GWL_STYLE, GetWindowLong(This->hwndChrome, GWL_STYLE) | WS_CLIPCHILDREN);
+		This->hwndChrome = hwnd;	
+
+		DWORD ps = GetWindowLong(This->hwndChrome, GWL_WNDPROC);
+		::EnumChildWindows(This->hwndChrome, EnumWindowsChildrenProc, NULL);
+		SetWindowLong(This->hwndChrome, GWL_EXSTYLE, GetWindowLong(This->hwndChrome, GWL_EXSTYLE) | WS_EX_LAYERED);
+
 		//SetWindowLong(This->hWndMain, GWL_STYLE, GetWindowLong(This->hWndMain, GWL_STYLE) | WS_CHILD | WS_CLIPCHILDREN);
 		//hookManager->SetHook(This->hwndChrome);
 		
 		DWORD style = GetWindowLong(This->hWndMain, GWL_STYLE);
 		style = style & ~(WS_POPUP);
-		style = style | WS_CHILD | WS_CLIPCHILDREN;
+		style = style | WS_CHILD;// | WS_CLIPSIBLINGS;
 		SetWindowLong(This->hWndMain, GWL_STYLE, style);
 
+		//HWND topChild = GetTopWindow(This->hwndChrome);
+		//::ShowWindow(topChild, SW_HIDE);
 		::SetParent(This->hWndMain, This->hwndChrome);
 
-		::SendMessage(This->hwndChrome, WM_CHANGEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEACCEL), NULL);
-		::SendMessage(This->hWndMain, WM_CHANGEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEACCEL), NULL);
+		//::SendMessage(This->hwndChrome, WM_CHANGEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEACCEL), NULL);
+		//::SendMessage(This->hWndMain, WM_CHANGEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEACCEL), NULL);
 		//::SendMessage(This->hwndChrome, WM_UPDATEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEFOCUS), 0);
 		//::SendMessage(This->hWndMain, WM_UPDATEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEFOCUS), 0);
 		//::UpdateWindow(This->hwndChrome);
 		//::UpdateWindow(This->hWndMain);
 		//::RedrawWindow(This->hwndChrome, NULL, NULL, RDW_ALLCHILDREN);
 		//::RedrawWindow(This->hWndMain, NULL, NULL, RDW_ALLCHILDREN);
-		//::InvalidateRect(This->hwndChrome,)
+
+
+		
 		log_event_log_message(L"MainFrame::EnumWindowsProc omfoabjiohaoglgimheiknfmmlfdhpke window founded", EVENTLOG_INFORMATION_TYPE, event_log_source_name);
 	}
 
@@ -274,7 +394,11 @@ DWORD WINAPI MainFrame::PipelineThreadFunction(LPVOID lpParam)
 			std::wstring urlW = std::wstring(url.begin(), url.end());
 			This->SetIEWindowShow(true);
 			This->SetIEWindowSize();
+			
+			::UpdateWindow(This->hwndChrome);
+			::UpdateWindow(This->hWndMain);
 			This->webBrowser->Navigate(urlW);
+			//::SetParent(This->hWndMain, This->hwndChrome);
 
 			log_event_log_message(L"#INIT# navigate to " + urlW, EVENTLOG_INFORMATION_TYPE, event_log_source_name);
 		}

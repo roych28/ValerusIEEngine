@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "Utils.h"
-#include <Windows.h>
 
 std::map<int, char* > wmTranslation = {
 	{ 0, "WM_NULL" },
@@ -1019,7 +1018,7 @@ const char* Utils::getMessageAsString(unsigned int messagenumber)
 	return translatedMessage;
 }
 
-HKEY OpenKey(HKEY hRootKey, LPCWSTR strKey)
+HKEY Utils::OpenKey(HKEY hRootKey, LPCWSTR strKey)
 {
 	HKEY hKey;
 	LONG nError = RegOpenKeyEx(hRootKey, strKey, NULL, KEY_ALL_ACCESS, &hKey);
@@ -1038,7 +1037,7 @@ HKEY OpenKey(HKEY hRootKey, LPCWSTR strKey)
 	return hKey;
 }
 
-void SetintVal(HKEY hKey, LPCTSTR lpValue, DWORD data)
+void Utils::SetIntVal(HKEY hKey, LPCTSTR lpValue, DWORD data)
 {
 	LONG nError = RegSetValueEx(hKey, lpValue, NULL, REG_DWORD, (LPBYTE)&data, sizeof(DWORD));
 
@@ -1066,7 +1065,7 @@ DWORD GetintVal(HKEY hKey, LPCTSTR lpValue)
 
 BOOL SetcharVal(HKEY Key, LPCWSTR subkey, LPCWSTR StringName, LPCWSTR Stringdata)
 {
-	HKEY hKey = OpenKey(Key, subkey);
+	HKEY hKey = Utils::OpenKey(Key, subkey);
 
 	LONG openRes = RegOpenKeyEx(Key, subkey, 0, KEY_ALL_ACCESS, &hKey);
 

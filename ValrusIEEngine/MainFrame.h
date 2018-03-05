@@ -19,8 +19,9 @@ private:
 
 	static DWORD WINAPI  PipelineThreadFunction(LPVOID lpParam);
 	static BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lpParam);
-
+	static BOOL CALLBACK EnumWindowsChildrenProc(HWND hwnd, LPARAM lpParam);
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+	
 	void SetIEWindowSize();
 	void SetIEWindowShow(bool visible);
 public:
