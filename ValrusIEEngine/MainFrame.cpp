@@ -178,7 +178,7 @@ WORD MainFrame::RegMainClass()
 {
 	WNDCLASS wc;
 	wc.cbClsExtra = wc.cbWndExtra = 0;
-	wc.hbrBackground = (HBRUSH)COLOR_WINDOW;
+	wc.hbrBackground = (HBRUSH)0;
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wc.hIcon = NULL;
 	wc.hInstance = this->hInst;
@@ -233,43 +233,8 @@ BOOL CALLBACK MainFrame::EnumWindowsChildrenProc(HWND hwnd, LPARAM lpParam)
 	GetClassName(hwnd, class_name, sizeof(class_name));
 	GetWindowText(hwnd, title, sizeof(title));		
 	
-	SetWindowPos(hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
-
-	/*DWORD id = GetWindowLong(hwnd, GWL_ID);
-
-	OutputDebugStringA(std::to_string((LONG)id).c_str());
-	//RECT rcClient;
-	//GetClientRect(hwnd, &rcClient);
-	//::SetWindowPos(hwnd, HWND_NOTOPMOST, 0, 0, 1, 1, SW_HIDE);
-	i++;
-	if (i == 4)
-	{
-		//::SetParent(This->hWndMain, hwnd);
-		//::ShowWindow(hwnd, SW_HIDE);
-	}
-
-	/*HWND iehwnd = (HWND)0x00781520;
-	id = GetWindowLong(iehwnd, GWL_ID);
-	id = GetWindowLong(iehwnd, GWL_ID);
-	GetClassName(iehwnd, class_name, sizeof(class_name));
-	GetWindowText(iehwnd, title, sizeof(title));
-
-	HWND ieparent = GetParent(iehwnd);
-	GetClassName(ieparent, class_name, sizeof(class_name));
-	GetWindowText(ieparent, title, sizeof(title));
-
-	ieparent = GetParent(ieparent);
-	GetClassName(ieparent, class_name, sizeof(class_name));
-	GetWindowText(ieparent, title, sizeof(title));
-
-	ieparent = GetParent(ieparent);
-	GetClassName(ieparent, class_name, sizeof(class_name));
-	GetWindowText(ieparent, title, sizeof(title));
-
-	ieparent = GetParent(ieparent);
-	GetClassName(ieparent, class_name, sizeof(class_name));
-	GetWindowText(ieparent, title, sizeof(title));
-	//::SetForegroundWindow(hwnd);*/
+	SetWindowPos(hwnd, This->hWndMain, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+	
 	return TRUE;
 }
 
@@ -291,18 +256,27 @@ BOOL CALLBACK MainFrame::EnumWindowsProc(HWND hwnd, LPARAM lpParam)
 		DWORD ps = GetWindowLong(This->hwndChrome, GWL_WNDPROC);
 		::EnumChildWindows(This->hwndChrome, EnumWindowsChildrenProc, NULL);
 		SetWindowLong(This->hwndChrome, GWL_EXSTYLE, GetWindowLong(This->hwndChrome, GWL_EXSTYLE) | WS_EX_LAYERED);
-
-		//SetWindowLong(This->hWndMain, GWL_STYLE, GetWindowLong(This->hWndMain, GWL_STYLE) | WS_CHILD | WS_CLIPCHILDREN);
-		//hookManager->SetHook(This->hwndChrome);
 		
 		DWORD style = GetWindowLong(This->hWndMain, GWL_STYLE);
 		style = style & ~(WS_POPUP);
 		style = style | WS_CHILD;// | WS_CLIPSIBLINGS;
 		SetWindowLong(This->hWndMain, GWL_STYLE, style);
 
+		SetWindowPos(This->hwndChrome, This->hWndMain, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 		//HWND topChild = GetTopWindow(This->hwndChrome);
 		//::ShowWindow(topChild, SW_HIDE);
+
+		DWORD chromeThreadId, currentThreadId;
+		GetWindowThreadProcessId(This->hwndChrome, &chromeThreadId);
+		GetWindowThreadProcessId(This->hWndMain, &currentThreadId);
+		BOOL ret = AttachThreadInput(currentThreadId, chromeThreadId, TRUE);
+
 		::SetParent(This->hWndMain, This->hwndChrome);
+
+		SendMessage(This->hwndChrome, WM_UPDATEUISTATE, UIS_INITIALIZE, 0);
+		SendMessage(This->hWndMain, WM_UPDATEUISTATE, UIS_INITIALIZE, 0);
+		SendMessage(This->hwndChrome, WM_CHANGEUISTATE, UIS_INITIALIZE, 0);
+		SendMessage(This->hWndMain, WM_CHANGEUISTATE, UIS_INITIALIZE, 0);
 
 		//::SendMessage(This->hwndChrome, WM_CHANGEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEACCEL), NULL);
 		//::SendMessage(This->hWndMain, WM_CHANGEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEACCEL), NULL);

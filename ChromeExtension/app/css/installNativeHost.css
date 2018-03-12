@@ -1,0 +1,25 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    clear: both;
+    height: 100%;
+    width: 100%;
+
+    font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:14px;line-height:1.42857143;color:#333
+}
+
+.step-div{
+    width:400px;
+    display:inline-block;
+    vertical-align:top
+}
+
+.title-div {
+    width:100%;
+}
+
+.title {
+    display:inline-block;
+    vertical-align:middle;
+}
+
