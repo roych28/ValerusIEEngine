@@ -152,13 +152,10 @@ LRESULT CALLBACK MainFrame::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 		}
 		break;
 	case WM_PAINT:
-
 		break;
 	case WM_SYSCOLORCHANGE:
-
 		break;
 	case WM_WINDOWPOSCHANGING:
-
 		break;
 		
 	case WM_DESTROY:
@@ -202,7 +199,7 @@ void MainFrame::SetIEWindowSize()
 	ptDiff.x = (rcWind.right - rcWind.left) - rcClient.right;
 	ptDiff.y = (rcWind.bottom - rcWind.top) - rcClient.bottom;
 
-	SetWindowPos(hwndChrome, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+	SetWindowPos(hwndChrome, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 
 	if (rcWind.left == -8 && rcWind.top == -8)
 	{
@@ -224,7 +221,6 @@ void MainFrame::SetIEWindowShow(bool visible)
 	UpdateWindow(hwndChrome);
 }
 
-int i = 0;
 
 BOOL CALLBACK MainFrame::EnumWindowsChildrenProc(HWND hwnd, LPARAM lpParam)
 {
@@ -233,7 +229,7 @@ BOOL CALLBACK MainFrame::EnumWindowsChildrenProc(HWND hwnd, LPARAM lpParam)
 	GetClassName(hwnd, class_name, sizeof(class_name));
 	GetWindowText(hwnd, title, sizeof(title));		
 	
-	SetWindowPos(hwnd, This->hWndMain, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+	//SetWindowPos(hwnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 	
 	return TRUE;
 }
@@ -252,42 +248,7 @@ BOOL CALLBACK MainFrame::EnumWindowsProc(HWND hwnd, LPARAM lpParam)
 	if (titleW.find(This->windowTitle) != std::string::npos)
 	{
 		This->hwndChrome = hwnd;	
-
-		DWORD ps = GetWindowLong(This->hwndChrome, GWL_WNDPROC);
-		::EnumChildWindows(This->hwndChrome, EnumWindowsChildrenProc, NULL);
-		SetWindowLong(This->hwndChrome, GWL_EXSTYLE, GetWindowLong(This->hwndChrome, GWL_EXSTYLE) | WS_EX_LAYERED);
-		
-		DWORD style = GetWindowLong(This->hWndMain, GWL_STYLE);
-		style = style & ~(WS_POPUP);
-		style = style | WS_CHILD;// | WS_CLIPSIBLINGS;
-		SetWindowLong(This->hWndMain, GWL_STYLE, style);
-
-		SetWindowPos(This->hwndChrome, This->hWndMain, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
-		//HWND topChild = GetTopWindow(This->hwndChrome);
-		//::ShowWindow(topChild, SW_HIDE);
-
-		DWORD chromeThreadId, currentThreadId;
-		GetWindowThreadProcessId(This->hwndChrome, &chromeThreadId);
-		GetWindowThreadProcessId(This->hWndMain, &currentThreadId);
-		BOOL ret = AttachThreadInput(currentThreadId, chromeThreadId, TRUE);
-
 		::SetParent(This->hWndMain, This->hwndChrome);
-
-		SendMessage(This->hwndChrome, WM_UPDATEUISTATE, UIS_INITIALIZE, 0);
-		SendMessage(This->hWndMain, WM_UPDATEUISTATE, UIS_INITIALIZE, 0);
-		SendMessage(This->hwndChrome, WM_CHANGEUISTATE, UIS_INITIALIZE, 0);
-		SendMessage(This->hWndMain, WM_CHANGEUISTATE, UIS_INITIALIZE, 0);
-
-		//::SendMessage(This->hwndChrome, WM_CHANGEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEACCEL), NULL);
-		//::SendMessage(This->hWndMain, WM_CHANGEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEACCEL), NULL);
-		//::SendMessage(This->hwndChrome, WM_UPDATEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEFOCUS), 0);
-		//::SendMessage(This->hWndMain, WM_UPDATEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEFOCUS), 0);
-		//::UpdateWindow(This->hwndChrome);
-		//::UpdateWindow(This->hWndMain);
-		//::RedrawWindow(This->hwndChrome, NULL, NULL, RDW_ALLCHILDREN);
-		//::RedrawWindow(This->hWndMain, NULL, NULL, RDW_ALLCHILDREN);
-
-
 		
 		log_event_log_message(L"MainFrame::EnumWindowsProc omfoabjiohaoglgimheiknfmmlfdhpke window founded", EVENTLOG_INFORMATION_TYPE, event_log_source_name);
 	}
@@ -358,10 +319,6 @@ DWORD WINAPI MainFrame::PipelineThreadFunction(LPVOID lpParam)
 			::Sleep(50); //wait for window title to update
 			EnumWindows(MainFrame::EnumWindowsProc, NULL);
 		}
-		else if (This->parsedValues["command"] == "#ONMOVE#")
-		{
-
-		}
 		else if (This->parsedValues["command"] == "#INIT#")
 		{
 			std::string url = This->parsedValues["url"];
@@ -372,7 +329,6 @@ DWORD WINAPI MainFrame::PipelineThreadFunction(LPVOID lpParam)
 			::UpdateWindow(This->hwndChrome);
 			::UpdateWindow(This->hWndMain);
 			This->webBrowser->Navigate(urlW);
-			//::SetParent(This->hWndMain, This->hwndChrome);
 
 			log_event_log_message(L"#INIT# navigate to " + urlW, EVENTLOG_INFORMATION_TYPE, event_log_source_name);
 		}
@@ -393,4 +349,28 @@ DWORD WINAPI MainFrame::PipelineThreadFunction(LPVOID lpParam)
 //HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings\ZoneMap\IntranetName
 //HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings\ZoneMap\UNCAsIntranet
 //HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings\ZoneMap\AutoDetect
+
+/*DWORD ps = GetWindowLong(This->hwndChrome, GWL_WNDPROC);
+::EnumChildWindows(This->hwndChrome, EnumWindowsChildrenProc, NULL);
+//SetWindowLong(This->hwndChrome, GWL_EXSTYLE, GetWindowLong(This->hwndChrome, GWL_EXSTYLE) | WS_EX_LAYERED);
+
+DWORD style = GetWindowLong(This->hWndMain, GWL_STYLE);
+style = style & ~(WS_POPUP);
+style = style | WS_CHILD;// | WS_CLIPSIBLINGS;
+SetWindowLong(This->hWndMain, GWL_STYLE, style);
+
+SetWindowPos(This->hwndChrome, This->hWndMain, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+//HWND topChild = GetTopWindow(This->hwndChrome);
+//::ShowWindow(topChild, SW_HIDE);
+
+DWORD chromeThreadId, currentThreadId;
+GetWindowThreadProcessId(This->hwndChrome, &chromeThreadId);
+GetWindowThreadProcessId(This->hWndMain, &currentThreadId);
+BOOL ret = AttachThreadInput(currentThreadId, chromeThreadId, TRUE);*/
+
+/*
+else if (This->parsedValues["command"] == "#ONMOVE#")
+{
+
+}*/
 

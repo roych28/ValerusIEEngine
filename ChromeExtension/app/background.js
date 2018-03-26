@@ -10,6 +10,10 @@ function loadTab(){
         var url = "main.html?url="
             + encodeURIComponent(items.url);
 
+        if(installTabId){
+            chrome.tabs.remove(installTabId);
+        }
+
         chrome.tabs.create({'url': url}, function (tab) {
             console.log("Valerus tab loaded", tab.id);
         });
@@ -43,10 +47,13 @@ function isNativeHostInstalled(){
                 });
             }
 
-            timer = setTimeout(isNativeHostInstalled, 4000);
+            timer = setTimeout(isNativeHostInstalled, 1000);
         });
 
-        stop(port);
+        window.setTimeout(function() {
+            stop(port);
+        }, 1000);
+
     }
 }
 
