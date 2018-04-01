@@ -64,7 +64,7 @@ RECT WebBrowser::PixelToHiMetric(const RECT& _rc)
 {
 	static bool s_initialized = false;
 	static int s_pixelsPerInchX, s_pixelsPerInchY;
-	//if(!s_initialized)
+	if(!s_initialized)
 	{
 		HDC hdc = ::GetDC(0);
 		s_pixelsPerInchX = ::GetDeviceCaps(hdc, LOGPIXELSX);
@@ -122,16 +122,7 @@ void WebBrowser::Navigate(wstring szUrl)
 	variant_t flags(0x02u); //navNoHistory
     HRESULT res = this->webBrowser2->Navigate(url, 0, 0, 0, 0);
 
-	//COleVariant vaURL(szUrl);
-
-	//CString szParent("_SELF");
-	//COleVariant vaParent(szParent);
-	//COleVariant null;
-
-	//CComVariant *urlVar = new CComVariant(L"http://www.google.com/");
-
 	this->webBrowser2->put_Visible(VARIANT_TRUE);
-	//HRESULT res = this->webBrowser2->Navigate2(urlVar, &flags, 0, 0, 0);
 
 	std::wstring resStr = std::to_wstring(res);
 	log_event_log_message(L"WebBrowser::Navigate res: " + resStr, EVENTLOG_INFORMATION_TYPE, event_log_source_name);

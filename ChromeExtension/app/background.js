@@ -14,7 +14,7 @@ function loadTab(){
             chrome.tabs.remove(installTabId);
         }
 
-        chrome.tabs.create({'url': url}, function (tab) {
+        chrome.windows.create({'url': url}, function (tab) {
             console.log("Valerus tab loaded", tab.id);
         });
     });

@@ -1,10 +1,10 @@
 {
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAygLnjtKq6PFSFePzgpWAC8gzAHs6Gy6b6g0Z908pfRVtRuOf47k0fjg2j3KqD6R9MBjHm4GOQjSZDQEhwnLLUkN9+sCsYbhe6fDgBZ2a9GumCD5PMK/YWKusV8Ohyi5ECrbX0unp+i8/lF5JQiNpKR3JYVixAIcjI5FJIHC2BLDCTOhx2z4/rjDvYPi/SeLpUiU2WfMvcy5C6Ifhqh0bnWlhRgytDBXXg6vZfx44te60DmNNCJF3IQfiz8pXa3GL0M1pMZHNsY4SnkFicAmuWtwNr9i5rfcqEZrnS3tr5Pp9LWN5sgNcjlPUb/8NXIdwYERA1TAoL9/XfFCvAsQ9GwIDAQAB",
-  "name": "Valrus IE Wrapper",
-  "short_name": "ValerusIE",
-  "version": "3.0",
+  "name": "Valerus Engine Extension",
+  "short_name": "Valerus Engine",
+  "version": "5.0",
   "manifest_version": 2,
-  "description": "IE11 inside chrome.",
+  "description": "Valerus inside chrome extension.",
   "background": {
     "scripts": ["background.js"],
     "persistent": true
