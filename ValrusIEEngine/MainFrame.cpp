@@ -123,7 +123,7 @@ bool MainFrame::Init()
 
 LRESULT CALLBACK MainFrame::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	DLog(L"WndProc %Ts\r\n", Utils::getMessageAsString(uMsg));
+	//DLog(L"WndProc %Ts\r\n", Utils::getMessageAsString(uMsg));
 	switch (uMsg)
 	{
 	case WM_SIZE:
@@ -141,6 +141,11 @@ LRESULT CALLBACK MainFrame::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 			{
 				This->webBrowser->SetRect(rc);
 				log_event_log_message(L"MainFrame::WndProc WM_SIZE", EVENTLOG_INFORMATION_TYPE, event_log_source_name);
+			}
+
+			if (This->webBrowser != 0)
+			{
+				This->webBrowser->TryAttachClickEvents();
 			}
 				
 		}
@@ -170,10 +175,6 @@ LRESULT CALLBACK MainFrame::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 		break;
 	}
 
-	if (This->webBrowser != 0)
-	{
-		This->webBrowser->TryAttachClickEvents();
-	}
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 

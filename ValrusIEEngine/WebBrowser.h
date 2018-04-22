@@ -5,6 +5,7 @@
 #include <Windows.h>
 #include <mshtml.h>
 #include "ClickEvents.h"
+#include <memory>
 
 using namespace std;
 
@@ -196,7 +197,7 @@ protected:
 	HWND hWndParent;
 	HWND hWndControl;
 
-	std::tr1::shared_ptr<ClickEvents> clickEvents_;
+	std::shared_ptr<ClickEvents> clickEvents_;
 	bool clickEventsAttached_;
 	_bstr_t documentUniqueID_;
 	_variant_t clickDispatch_;

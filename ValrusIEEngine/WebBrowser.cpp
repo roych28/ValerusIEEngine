@@ -66,14 +66,10 @@ bool WebBrowser::CreateBrowser()
 		return FALSE;
 	}
 
-	clickEvents_.reset(new ClickEvents(this));
+	clickEvents_.reset(new ClickEvents(webBrowser2));
 
-	_ASSERT(oleClientSite_);
-	_ASSERT(externalDispatch_);
-	_ASSERT(clickEvents_);
-
-	parentHandle_ = GetParentWindow(windowHandle_);
-	LOG_DEBUG << "BrowserWindow(): parentHandle = " << (int)parentHandle_;
+	//parentHandle_ = GetParentWindow(windowHandle_);
+	//LOG_DEBUG << "BrowserWindow(): parentHandle = " << (int)parentHandle_;
 
 	clickDispatch_.vt = VT_DISPATCH;
 	clickDispatch_.pdispVal = static_cast<IDispatch*>(clickEvents_.get());

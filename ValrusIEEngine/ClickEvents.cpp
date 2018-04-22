@@ -12,7 +12,8 @@
 //#include "../log.h"
 
 
-ClickEvents::ClickEvents() {
+ClickEvents::ClickEvents(IWebBrowser2* webBrowser2) {
+	mWebBrowser2 = webBrowser2;
 }
 // IUnknown
 HRESULT STDMETHODCALLTYPE ClickEvents::QueryInterface(
@@ -63,7 +64,7 @@ HRESULT STDMETHODCALLTYPE ClickEvents::Invoke(
 	puArgErr = 0;
 	HRESULT hr;
 
-	IWebBrowser2* webBrowser2 = NULL;// browserWindow_->GetWebBrowser2();
+	IWebBrowser2* webBrowser2 = mWebBrowser2;// browserWindow_->GetWebBrowser2();
 	IDispatchPtr documentDispatch;
 	hr = webBrowser2->get_Document(&documentDispatch);
 	if (FAILED(hr) || !documentDispatch) {

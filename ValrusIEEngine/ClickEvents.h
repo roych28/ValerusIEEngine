@@ -1,13 +1,13 @@
 #pragma once
 
 #include <MsHTML.h>
-#include "ClickEvents.h"
+#include <Exdisp.h>
 
 class ClickEvents : public IDispatch {
 private:
-	//BrowserWindow * browserWindow_;
+	IWebBrowser2 * mWebBrowser2;
 public:
-	ClickEvents();
+	ClickEvents(IWebBrowser2* webBrowser2);
 	// IUnknown
 	HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, void** ppvObject);
 	ULONG STDMETHODCALLTYPE AddRef(void);
@@ -34,4 +34,4 @@ public:
 		/* [out] */ VARIANT *pVarResult,
 		/* [out] */ EXCEPINFO *pExcepInfo,
 		/* [out] */ UINT *puArgErr);
-};
+}; 
