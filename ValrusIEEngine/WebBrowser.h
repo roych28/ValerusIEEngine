@@ -3,6 +3,8 @@
 #include <string>
 #include <tchar.h>
 #include <Windows.h>
+#include <mshtml.h>
+#include "ClickEvents.h"
 
 using namespace std;
 
@@ -176,6 +178,10 @@ public:
 		__RPC__out STATSTG *pstatstg,
 		DWORD grfStatFlag) override;
 
+	/*STDMETHODIMP WebBrowser::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags,
+		DISPPARAMS* pDispParams, VARIANT* pVarResult,
+		EXCEPINFO* pExcepInfo, UINT* puArgErr);*/
+	bool TryAttachClickEvents();
 protected:
 
 	IOleObject* oleObject;
@@ -189,5 +195,10 @@ protected:
 
 	HWND hWndParent;
 	HWND hWndControl;
+
+	std::tr1::shared_ptr<ClickEvents> clickEvents_;
+	bool clickEventsAttached_;
+	_bstr_t documentUniqueID_;
+	_variant_t clickDispatch_;
 
 };

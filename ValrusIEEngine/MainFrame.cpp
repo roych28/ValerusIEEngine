@@ -118,12 +118,12 @@ bool MainFrame::Init()
 	updateIERegHKCU(L"FEATURE_XSSFILTER", 1);
 	updateIERegHKCU(L"FEATURE_ZONE_ELEVATION", 1);
 
-	return true;
+	return true; 
 }
 
 LRESULT CALLBACK MainFrame::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	//DLog(L"WndProc %ws\r\n", Utils::getMessageAsString(uMsg));
+	DLog(L"WndProc %Ts\r\n", Utils::getMessageAsString(uMsg));
 	switch (uMsg)
 	{
 	case WM_SIZE:
@@ -151,6 +151,8 @@ LRESULT CALLBACK MainFrame::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 			This->webBrowser->ShowObject();
 		}
 		break;
+	case WM_SETCURSOR:
+		break;
 	case WM_PAINT:
 		break;
 	case WM_SYSCOLORCHANGE:
@@ -168,6 +170,10 @@ LRESULT CALLBACK MainFrame::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 		break;
 	}
 
+	if (This->webBrowser != 0)
+	{
+		This->webBrowser->TryAttachClickEvents();
+	}
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 

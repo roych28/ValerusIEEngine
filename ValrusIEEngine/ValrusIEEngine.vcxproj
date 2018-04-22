@@ -143,6 +143,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ClickEvents.h" />
     <ClInclude Include="EventLog.h" />
     <ClInclude Include="json\json-forwards.h" />
     <ClInclude Include="json\json.h" />
@@ -154,6 +155,7 @@
     <ClInclude Include="WebBrowser.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ClickEvents.cpp" />
     <ClCompile Include="EventLog.cpp" />
     <ClCompile Include="jsoncpp.cpp" />
     <ClCompile Include="MainFrame.cpp" />
