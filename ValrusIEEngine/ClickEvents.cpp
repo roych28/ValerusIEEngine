@@ -46,6 +46,7 @@ HRESULT STDMETHODCALLTYPE ClickEvents::GetIDsOfNames(
 	/* [out] */ DISPID *rgDispId) {
 	return E_NOTIMPL;
 }
+
 HRESULT STDMETHODCALLTYPE ClickEvents::Invoke(
 	/* [in] */ DISPID dispId,
 	/* [in] */ REFIID riid,

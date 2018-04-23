@@ -4,7 +4,7 @@
 #include <atlcomcli.h>
 #include <mshtml.h>
 #include <comdef.h>
-
+#include "EventSink.h"
 
 _COM_SMARTPTR_TYPEDEF(IHTMLDocument2, IID_IHTMLDocument2);
 _COM_SMARTPTR_TYPEDEF(IHTMLDocument3, IID_IHTMLDocument3);
@@ -68,13 +68,31 @@ bool WebBrowser::CreateBrowser()
 
 	clickEvents_.reset(new ClickEvents(webBrowser2));
 
-	//parentHandle_ = GetParentWindow(windowHandle_);
-	//LOG_DEBUG << "BrowserWindow(): parentHandle = " << (int)parentHandle_;
-
 	clickDispatch_.vt = VT_DISPATCH;
 	clickDispatch_.pdispVal = static_cast<IDispatch*>(clickEvents_.get());
 
 	return TRUE;
+}
+
+void WebBrowser::ConnectEventSink()
+{
+	HRESULT hr;
+	IConnectionPointContainer* pCPC;
+
+	if (webBrowser2 == NULL) return; // If we don't have a site, don't do anything
+							   // Get an IConnectionPointContainer interface pointer from the site
+	hr = webBrowser2->QueryInterface(IID_IConnectionPointContainer, (void**)&pCPC);
+	if (FAILED(hr)) return; // If we couldn't get it, abort
+							// Now we use the IConnectionPointContainer interface to get an IConnectionPoint interface pointer that will handle DWebBrowserEvents2 "dispatch interface" events.
+							// That means we have to plug our implementation of DWebBrowserEvents2 into the returned IConnectionPoint interface using its Advise() method, as below
+	hr = pCPC->FindConnectionPoint(DIID_DWebBrowserEvents2, &pCP);
+	if (FAILED(hr)) { // If it failed, release the pCPC interface pointer and abort
+		pCPC->Release();
+		return;
+	}
+	// Finally we can plug our event handler object EventSink into the connection point and start receiving IE events
+	// The advise cookie is just a return value we use when we want to "unplug" our event handler object from the connection point
+	pCP->Advise((IUnknown*)&EventSink, &adviseCookie);
 }
 
 bool WebBrowser::TryAttachClickEvents() {

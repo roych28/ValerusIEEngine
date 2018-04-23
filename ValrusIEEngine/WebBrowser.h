@@ -179,10 +179,8 @@ public:
 		__RPC__out STATSTG *pstatstg,
 		DWORD grfStatFlag) override;
 
-	/*STDMETHODIMP WebBrowser::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags,
-		DISPPARAMS* pDispParams, VARIANT* pVarResult,
-		EXCEPINFO* pExcepInfo, UINT* puArgErr);*/
 	bool TryAttachClickEvents();
+	void ConnectEventSink();
 protected:
 
 	IOleObject* oleObject;
@@ -202,4 +200,6 @@ protected:
 	_bstr_t documentUniqueID_;
 	_variant_t clickDispatch_;
 
+	IConnectionPoint *pCP;
+	DWORD adviseCookie;
 };

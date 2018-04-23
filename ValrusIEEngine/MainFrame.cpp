@@ -16,8 +16,8 @@ MainFrame* This = NULL;
 TCHAR* szWndTitleMain = _T("valerus ie wrapper");
 TCHAR* szWndClassMain = _T("main window wrapper");
 
-static TCHAR __DEBUG_BUF[1024];
-#define DLog(fmt, ...)  swprintf(__DEBUG_BUF, fmt, ##__VA_ARGS__); OutputDebugString(__DEBUG_BUF);
+static char __DEBUG_BUF[1024];
+#define DLog(fmt, ...)  sprintf(__DEBUG_BUF, fmt, ##__VA_ARGS__); OutputDebugStringA(__DEBUG_BUF);
 
 MainFrame::MainFrame(HINSTANCE hInst)
 {
@@ -123,7 +123,7 @@ bool MainFrame::Init()
 
 LRESULT CALLBACK MainFrame::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	//DLog(L"WndProc %Ts\r\n", Utils::getMessageAsString(uMsg));
+	DLog("WndProc %s\r\n", Utils::getMessageAsString(uMsg));
 	switch (uMsg)
 	{
 	case WM_SIZE:
@@ -145,7 +145,8 @@ LRESULT CALLBACK MainFrame::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 
 			if (This->webBrowser != 0)
 			{
-				This->webBrowser->TryAttachClickEvents();
+				//This->webBrowser->TryAttachClickEvents();
+				This->webBrowser->ConnectEventSink();
 			}
 				
 		}
