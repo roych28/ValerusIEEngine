@@ -66,10 +66,9 @@ bool WebBrowser::CreateBrowser()
 		return FALSE;
 	}
 
-	clickEvents_.reset(new ClickEvents(webBrowser2));
+	webBrowser2->put_Silent(VARIANT_TRUE);
 
-	clickDispatch_.vt = VT_DISPATCH;
-	clickDispatch_.pdispVal = static_cast<IDispatch*>(clickEvents_.get());
+	ConnectEventSink();
 
 	return TRUE;
 }
@@ -93,94 +92,6 @@ void WebBrowser::ConnectEventSink()
 	// Finally we can plug our event handler object EventSink into the connection point and start receiving IE events
 	// The advise cookie is just a return value we use when we want to "unplug" our event handler object from the connection point
 	pCP->Advise((IUnknown*)&EventSink, &adviseCookie);
-}
-
-bool WebBrowser::TryAttachClickEvents() {
-	// Attach OnClick event - to catch clicking any external
-	// links. Returns whether succeeded to attach click events,
-	// it is required for the DOM to be ready, call this
-	// function in a timer until it succeeds.After browser
-	// navigation these click events need to be re-attached.
-
-	if (!webBrowser2) {
-		// Web-browser control might be closing.
-		return false;
-	}
-	HRESULT hr;
-	VARIANT_BOOL isBusy;
-	hr = webBrowser2->get_Busy(&isBusy);
-	// This may fail when window is loading/unloading.
-	if (FAILED(hr) || isBusy == VARIANT_TRUE) {
-		return false;
-	}
-	IDispatchPtr dispatch;
-	hr = webBrowser2->get_Document(&dispatch);
-	// This may fail when window is loading.
-	if (FAILED(hr) || !dispatch) {
-		return false;
-	}
-	IHTMLDocument3Ptr htmlDocument3;
-	hr = dispatch->QueryInterface(IID_IHTMLDocument3,
-		(void**)&htmlDocument3);
-	if (FAILED(hr) || !htmlDocument3) {
-		//LOG_WARNING << "BrowserWindow::TryAttachClickEvents() failed "
-			//"QueryInterface(IHTMLDocument3) failed";
-		return false;
-	}
-	IHTMLElementPtr htmlElement;
-	hr = htmlDocument3->get_documentElement(&htmlElement);
-	if (FAILED(hr) || !htmlElement) {
-		//LOG_WARNING << "BrowserWindow::TryAttachClickEvents() failed "
-		//	"get_documentElement() failed";
-		return false;
-	}
-	_bstr_t documentID;
-	hr = htmlElement->get_id(&documentID.GetBSTR());
-	if (FAILED(hr)) {
-		//LOG_WARNING << "BrowserWindow::TryAttachClickEvents() failed "
-		//	"htmlElement->get_id() failed";
-		return false;
-	}
-	if (documentID.length() && documentID == documentUniqueID_) {
-		return true;
-	}
-	else {
-		// Document's identifier changed, browser navigated.
-		this->clickEventsAttached_ = false;
-		_bstr_t uniqueID;
-		hr = htmlDocument3->get_uniqueID(&uniqueID.GetBSTR());
-		if (FAILED(hr)) {
-			//LOG_WARNING << "BrowserWindow::TryAttachClickEvents() "
-			//	"failed: htmlDocument3->get_uniqueID() failed";
-			return false;
-		}
-		hr = htmlElement->put_id(uniqueID.GetBSTR());
-		if (FAILED(hr)) {
-			//LOG_WARNING << "BrowserWindow::TryAttachClickEvents() "
-			//	"failed: htmlElement->put_id() failed";
-			return false;
-		}
-		documentUniqueID_.Assign(uniqueID.GetBSTR());
-	}
-	if (this->clickEventsAttached_) {
-		return true;
-	}
-	IHTMLDocument2Ptr htmlDocument2;
-	hr = dispatch->QueryInterface(IID_IHTMLDocument2,
-		(void**)&htmlDocument2);
-	if (FAILED(hr) || !htmlDocument2) {
-		//LOG_WARNING << "BrowserWindow::TryAttachClickEvents() failed: "
-		//	"QueryInterface(IHTMLDocument2)";
-		return false;
-	}
-	hr = htmlDocument2->put_onclick(clickDispatch_);
-	if (FAILED(hr)) {
-		//LOG_WARNING << "BrowserWindow::TryAttachClickEvents() failed: "
-		//	"htmlDocument2->put_onclick() failed";
-		return false;
-	}
-	this->clickEventsAttached_ = true;
-	return true;
 }
 
 RECT WebBrowser::PixelToHiMetric(const RECT& _rc)
@@ -559,42 +470,98 @@ HRESULT STDMETHODCALLTYPE WebBrowser::Stat(
 {
 	return E_NOTIMPL;
 }
+
+
+//clickEvents_.reset(new ClickEvents(webBrowser2));
+
+//clickDispatch_.vt = VT_DISPATCH;
+//clickDispatch_.pdispVal = static_cast<IDispatch*>(clickEvents_.get());
+
 /*
-STDMETHODIMP WebBrowser::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags,
-	DISPPARAMS* pDispParams, VARIANT* pVarResult,
-	EXCEPINFO* pExcepInfo, UINT* puArgErr)
-{
-	if (IID_NULL != riid)
-	{
-		return DISP_E_UNKNOWNINTERFACE;
-	}
+bool WebBrowser::TryAttachClickEvents() {
+	// Attach OnClick event - to catch clicking any external
+	// links. Returns whether succeeded to attach click events,
+	// it is required for the DOM to be ready, call this
+	// function in a timer until it succeeds.After browser
+	// navigation these click events need to be re-attached.
 
-	if (!pDispParams)
-	{
-		return DISP_E_PARAMNOTOPTIONAL;
+	if (!webBrowser2) {
+		// Web-browser control might be closing.
+		return false;
 	}
-
-	switch (dispIdMember)
-	{
-	case DISPID_BEFORENAVIGATE2:
-	{
-		
+	HRESULT hr;
+	VARIANT_BOOL isBusy;
+	hr = webBrowser2->get_Busy(&isBusy);
+	// This may fail when window is loading/unloading.
+	if (FAILED(hr) || isBusy == VARIANT_TRUE) {
+		return false;
 	}
-	break;
-
-	case DISPID_DOCUMENTCOMPLETE:
-	{
-		
+	IDispatchPtr dispatch;
+	hr = webBrowser2->get_Document(&dispatch);
+	// This may fail when window is loading.
+	if (FAILED(hr) || !dispatch) {
+		return false;
 	}
-	break;
-	case DISPID_REFRESH:
-	{
-		
+	IHTMLDocument3Ptr htmlDocument3;
+	hr = dispatch->QueryInterface(IID_IHTMLDocument3,
+		(void**)&htmlDocument3);
+	if (FAILED(hr) || !htmlDocument3) {
+		//LOG_WARNING << "BrowserWindow::TryAttachClickEvents() failed "
+		//"QueryInterface(IHTMLDocument3) failed";
+		return false;
 	}
-	break;
-	default:
-		return DISP_E_MEMBERNOTFOUND;
+	IHTMLElementPtr htmlElement;
+	hr = htmlDocument3->get_documentElement(&htmlElement);
+	if (FAILED(hr) || !htmlElement) {
+		//LOG_WARNING << "BrowserWindow::TryAttachClickEvents() failed "
+		//	"get_documentElement() failed";
+		return false;
 	}
-
-	return S_OK;
+	_bstr_t documentID;
+	hr = htmlElement->get_id(&documentID.GetBSTR());
+	if (FAILED(hr)) {
+		//LOG_WARNING << "BrowserWindow::TryAttachClickEvents() failed "
+		//	"htmlElement->get_id() failed";
+		return false;
+	}
+	if (documentID.length() && documentID == documentUniqueID_) {
+		return true;
+	}
+	else {
+		// Document's identifier changed, browser navigated.
+		this->clickEventsAttached_ = false;
+		_bstr_t uniqueID;
+		hr = htmlDocument3->get_uniqueID(&uniqueID.GetBSTR());
+		if (FAILED(hr)) {
+			//LOG_WARNING << "BrowserWindow::TryAttachClickEvents() "
+			//	"failed: htmlDocument3->get_uniqueID() failed";
+			return false;
+		}
+		hr = htmlElement->put_id(uniqueID.GetBSTR());
+		if (FAILED(hr)) {
+			//LOG_WARNING << "BrowserWindow::TryAttachClickEvents() "
+			//	"failed: htmlElement->put_id() failed";
+			return false;
+		}
+		documentUniqueID_.Assign(uniqueID.GetBSTR());
+	}
+	if (this->clickEventsAttached_) {
+		return true;
+	}
+	IHTMLDocument2Ptr htmlDocument2;
+	hr = dispatch->QueryInterface(IID_IHTMLDocument2,
+		(void**)&htmlDocument2);
+	if (FAILED(hr) || !htmlDocument2) {
+		//LOG_WARNING << "BrowserWindow::TryAttachClickEvents() failed: "
+		//	"QueryInterface(IHTMLDocument2)";
+		return false;
+	}
+	hr = htmlDocument2->put_onclick(clickDispatch_);
+	if (FAILED(hr)) {
+		//LOG_WARNING << "BrowserWindow::TryAttachClickEvents() failed: "
+		//	"htmlDocument2->put_onclick() failed";
+		return false;
+	}
+	this->clickEventsAttached_ = true;
+	return true;
 }*/

@@ -195,11 +195,12 @@ protected:
 	HWND hWndParent;
 	HWND hWndControl;
 
-	std::shared_ptr<ClickEvents> clickEvents_;
-	bool clickEventsAttached_;
-	_bstr_t documentUniqueID_;
-	_variant_t clickDispatch_;
-
 	IConnectionPoint *pCP;
 	DWORD adviseCookie;
 };
+
+
+//std::shared_ptr<ClickEvents> clickEvents_;
+//bool clickEventsAttached_;
+//_bstr_t documentUniqueID_;
+//_variant_t clickDispatch_;

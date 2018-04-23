@@ -141,14 +141,7 @@ LRESULT CALLBACK MainFrame::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 			{
 				This->webBrowser->SetRect(rc);
 				log_event_log_message(L"MainFrame::WndProc WM_SIZE", EVENTLOG_INFORMATION_TYPE, event_log_source_name);
-			}
-
-			if (This->webBrowser != 0)
-			{
-				//This->webBrowser->TryAttachClickEvents();
-				This->webBrowser->ConnectEventSink();
-			}
-				
+			}				
 		}
 		break;
 	case WM_SHOWWINDOW:
