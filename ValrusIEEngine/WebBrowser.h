@@ -192,8 +192,8 @@ protected:
 
 	RECT rObject;
 
-	HWND hWndParent;
-	HWND hWndControl;
+	HWND m_hWndParent;
+	HWND m_hWndControl;
 
 	IConnectionPoint *pCP;
 	DWORD adviseCookie;

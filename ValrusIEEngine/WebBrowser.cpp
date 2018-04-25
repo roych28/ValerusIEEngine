@@ -15,7 +15,7 @@ WebBrowser::WebBrowser(HWND _hWndParent)
 {
 	iComRefCount = 0;
 	::SetRect(&rObject, -300, -300, 300, 300);
-	hWndParent = _hWndParent;
+	m_hWndParent = _hWndParent;
 
 	if (CreateBrowser() == FALSE)
 	{
@@ -48,7 +48,7 @@ bool WebBrowser::CreateBrowser()
 	RECT posRect;
 	::SetRect(&posRect, -300, -300, 300, 300);
 	hr = oleObject->DoVerb(OLEIVERB_INPLACEACTIVATE,
-		NULL, this, -1, hWndParent, &posRect);
+		NULL, this, -1, m_hWndParent, &posRect);
 	if (FAILED(hr))
 	{
 		MessageBox(NULL, _T("oleObject->DoVerb() failed"),
@@ -89,6 +89,8 @@ void WebBrowser::ConnectEventSink()
 		pCPC->Release();
 		return;
 	}
+
+	EventSink.SetParentHWND(m_hWndParent);
 	// Finally we can plug our event handler object EventSink into the connection point and start receiving IE events
 	// The advise cookie is just a return value we use when we want to "unplug" our event handler object from the connection point
 	pCP->Advise((IUnknown*)&EventSink, &adviseCookie);
@@ -201,7 +203,7 @@ ULONG STDMETHODCALLTYPE WebBrowser::Release(void)
 HRESULT STDMETHODCALLTYPE WebBrowser::GetWindow( 
 	__RPC__deref_out_opt HWND *phwnd)
 {
-	(*phwnd) = hWndParent;
+	(*phwnd) = m_hWndParent;
 	return S_OK;
 }
 
@@ -240,7 +242,7 @@ HRESULT STDMETHODCALLTYPE WebBrowser::GetWindowContext(
 	__RPC__out LPRECT lprcClipRect,
 	__RPC__inout LPOLEINPLACEFRAMEINFO lpFrameInfo)
 {
-	HWND hwnd = hWndParent;
+	HWND hwnd = m_hWndParent;
 
 	(*ppFrame) = NULL;
 	(*ppDoc) = NULL;
@@ -272,19 +274,19 @@ HRESULT STDMETHODCALLTYPE WebBrowser::OnUIDeactivate(
 
 HWND WebBrowser::GetControlWindow()
 {
-	if(hWndControl != 0)
-		return hWndControl;
+	if(m_hWndControl != 0)
+		return m_hWndControl;
 
 	if(oleInPlaceObject == 0)
 		return 0;
 
-	oleInPlaceObject->GetWindow(&hWndControl);
-	return hWndControl;
+	oleInPlaceObject->GetWindow(&m_hWndControl);
+	return m_hWndControl;
 }
 
 HRESULT STDMETHODCALLTYPE WebBrowser::OnInPlaceDeactivate(void)
 {
-	hWndControl = 0;
+	m_hWndControl = 0;
 	oleInPlaceObject = 0;
 
 	return S_OK;

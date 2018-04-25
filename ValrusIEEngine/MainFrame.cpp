@@ -86,10 +86,6 @@ bool MainFrame::Init()
 		0,                      // use default creation flags 
 		&dwThreadId);			// returns the thread identifier 
 
-	//HKEY hKey = Utils::OpenKey(HKEY_LOCAL_MACHINE, L"Software\\Microsoft\\Internet Explorer\\Main\\FeatureControl\\FEATURE_BROWSER_EMULATION");
-	//Utils::SetIntVal(hKey, L"ValrusIEEngine.exe", 11000);
-	//RegCloseKey(hKey);
-
 	updateIERegHKCU(L"FEATURE_BROWSER_EMULATION", 11000);
 	updateIERegHKCU(L"FEATURE_96DPI_PIXEL", 1);
 	updateIERegHKCU(L"FEATURE_BEHAVIORS", 1);
@@ -126,6 +122,23 @@ LRESULT CALLBACK MainFrame::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 	DLog("WndProc %s\r\n", Utils::getMessageAsString(uMsg));
 	switch (uMsg)
 	{
+	case WM_WEB_CONTROL_MESSAGE:
+		if(lParam)
+		{
+			std::wstring url = (wchar_t*)lParam;
+			std::string urlA = std::string(url.begin(), url.end());
+			std::string message = "{\"text\":\""+ urlA +"\",\"type\":\"#NEW_WINDOW_OPEN#\"}";
+
+			unsigned int len = message.length();
+
+			std::cout << char(len >> 0)
+				<< char(len >> 8)
+				<< char(len >> 16)
+				<< char(len >> 24);
+
+			std::cout << message << std::flush;
+		}
+		break;
 	case WM_SIZE:
 		if (This->webBrowser != 0)
 		{
@@ -200,7 +213,7 @@ void MainFrame::SetIEWindowSize()
 	ptDiff.x = (rcWind.right - rcWind.left) - rcClient.right;
 	ptDiff.y = (rcWind.bottom - rcWind.top) - rcClient.bottom;
 
-	SetWindowPos(hwndChrome, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+	//SetWindowPos(hwndChrome, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 
 	if (rcWind.left == -8 && rcWind.top == -8)
 	{
@@ -238,8 +251,8 @@ BOOL CALLBACK MainFrame::EnumWindowsChildrenProc(HWND hwnd, LPARAM lpParam)
 //callback that finds chrome and ie windows
 BOOL CALLBACK MainFrame::EnumWindowsProc(HWND hwnd, LPARAM lpParam)
 {
-	TCHAR class_name[512];
-	TCHAR title[512];
+	TCHAR class_name[2048];
+	TCHAR title[2048];
 	GetClassName(hwnd, class_name, sizeof(class_name));
 	GetWindowText(hwnd, title, sizeof(title));
 

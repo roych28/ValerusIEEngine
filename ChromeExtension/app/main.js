@@ -49,7 +49,7 @@ var IEPage = {
 		}.bind(this));
 
 		chrome.windows.onFocusChanged.addListener(function (windowId) {
-			if (windowId == this.windowId) {
+			/*if (windowId == this.windowId) {
 				chrome.tabs.getCurrent(function (tab) {
 					if (tab.active) {
 						this.onActivated();
@@ -57,7 +57,7 @@ var IEPage = {
 				}.bind(this));
 			} else {
 				this.onDeactivated();
-			}
+			}*/
 		}.bind(this));
 
 		chrome.tabs.onAttached.addListener(function (tabId, attachInfo) {
@@ -94,6 +94,14 @@ var IEPage = {
                 this.initNativeMessaging();
                 this.initEvents();
                 break;
+			case "#NEW_WINDOW_OPEN#":
+                var url = "main.html?url="
+                    + encodeURIComponent(message.text);
+                chrome.windows.create({
+                    // Just use the full URL if you need to open an external page
+                    url: chrome.runtime.getURL(url)
+                });
+				break;
 		}
 	},
     getMessage: function(type){
