@@ -221,7 +221,7 @@ void MainFrame::SetIEWindowSize()
 	}
 	else
 	{
-		SetWindowPos(hWndMain, HWND_TOP, 1, (rcWind.bottom - rcWind.top) - height - ptDiff.y, rcClient.right - 1, rcClient.bottom - ptDiff.y, SWP_SHOWWINDOW);
+		SetWindowPos(hWndMain, HWND_TOP, 1, (rcWind.bottom - rcWind.top) - height - ptDiff.y, rcClient.right - 1, rcClient.bottom - ptDiff.y-100, SWP_SHOWWINDOW);
 	}
 
 	UpdateWindow(hWndMain);
@@ -251,8 +251,8 @@ BOOL CALLBACK MainFrame::EnumWindowsChildrenProc(HWND hwnd, LPARAM lpParam)
 //callback that finds chrome and ie windows
 BOOL CALLBACK MainFrame::EnumWindowsProc(HWND hwnd, LPARAM lpParam)
 {
-	TCHAR class_name[2048];
-	TCHAR title[2048];
+	TCHAR class_name[4096];
+	TCHAR title[4096];
 	GetClassName(hwnd, class_name, sizeof(class_name));
 	GetWindowText(hwnd, title, sizeof(title));
 
