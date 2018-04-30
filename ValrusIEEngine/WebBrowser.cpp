@@ -66,7 +66,8 @@ bool WebBrowser::CreateBrowser()
 		return FALSE;
 	}
 
-	webBrowser2->put_Silent(VARIANT_TRUE);
+	this->webBrowser2->put_Silent(VARIANT_TRUE);
+	//this->webBrowser2->put_RegisterAsBrowser(VARIANT_TRUE);
 
 	ConnectEventSink();
 
@@ -78,12 +79,15 @@ void WebBrowser::ConnectEventSink()
 	HRESULT hr;
 	IConnectionPointContainer* pCPC;
 
-	if (webBrowser2 == NULL) return; // If we don't have a site, don't do anything
-							   // Get an IConnectionPointContainer interface pointer from the site
+	if (webBrowser2 == NULL) 
+		return; // If we don't have a site, don't do anything
+	// Get an IConnectionPointContainer interface pointer from the site
 	hr = webBrowser2->QueryInterface(IID_IConnectionPointContainer, (void**)&pCPC);
-	if (FAILED(hr)) return; // If we couldn't get it, abort
-							// Now we use the IConnectionPointContainer interface to get an IConnectionPoint interface pointer that will handle DWebBrowserEvents2 "dispatch interface" events.
-							// That means we have to plug our implementation of DWebBrowserEvents2 into the returned IConnectionPoint interface using its Advise() method, as below
+	if (FAILED(hr)) 
+		return; // If we couldn't get it, abort
+	
+				// Now we use the IConnectionPointContainer interface to get an IConnectionPoint interface pointer that will handle DWebBrowserEvents2 "dispatch interface" events.
+	// That means we have to plug our implementation of DWebBrowserEvents2 into the returned IConnectionPoint interface using its Advise() method, as below
 	hr = pCPC->FindConnectionPoint(DIID_DWebBrowserEvents2, &pCP);
 	if (FAILED(hr)) { // If it failed, release the pCPC interface pointer and abort
 		pCPC->Release();
