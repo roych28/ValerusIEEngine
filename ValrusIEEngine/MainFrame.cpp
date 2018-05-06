@@ -17,7 +17,7 @@ TCHAR* szWndTitleMain = _T("valerus ie wrapper");
 TCHAR* szWndClassMain = _T("main window wrapper");
 
 static char __DEBUG_BUF[1024];
-#define DLog(fmt, ...)  sprintf(__DEBUG_BUF, fmt, ##__VA_ARGS__); OutputDebugStringA(__DEBUG_BUF);
+#define DLog(fmt, ...)  sprintf_s(__DEBUG_BUF, 1024,fmt, ##__VA_ARGS__); OutputDebugStringA(__DEBUG_BUF);
 
 MainFrame::MainFrame(HINSTANCE hInst)
 {
@@ -119,7 +119,7 @@ bool MainFrame::Init()
 
 LRESULT CALLBACK MainFrame::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	DLog("WndProc %s\r\n", Utils::getMessageAsString(uMsg));
+	//DLog("WndProc %s\r\n", Utils::getMessageAsString(uMsg));
 	switch (uMsg)
 	{
 	case WM_WEB_CONTROL_MESSAGE:
@@ -129,7 +129,7 @@ LRESULT CALLBACK MainFrame::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 			std::string urlA = std::string(url.begin(), url.end());
 			std::string message = "{\"text\":\""+ urlA +"\",\"type\":\"#NEW_WINDOW_OPEN#\"}";
 
-			unsigned int len = message.length();
+			size_t len = message.length();
 
 			std::cout << char(len >> 0)
 				<< char(len >> 8)
@@ -301,7 +301,7 @@ DWORD WINAPI MainFrame::PipelineThreadFunction(LPVOID lpParam)
 		if (This->parsedValues["command"] == "#STOP#")
 		{
 			message = "{\"text\":\"EXITING...\"}";
-			int len = message.length();
+			size_t len = message.length();
 
 			std::cout << char(len >> 0)
 				<< char(len >> 8)
@@ -328,7 +328,7 @@ DWORD WINAPI MainFrame::PipelineThreadFunction(LPVOID lpParam)
 		{
 			std::string windowTitleA = This->parsedValues["windowTitle"];
 			This->windowTitle = std::wstring(windowTitleA.begin(), windowTitleA.end());
-			::Sleep(50); //wait for window title to update
+			::Sleep(200); //wait for window title to update
 			EnumWindows(MainFrame::EnumWindowsProc, NULL);
 		}
 		else if (This->parsedValues["command"] == "#INIT#")
@@ -345,7 +345,7 @@ DWORD WINAPI MainFrame::PipelineThreadFunction(LPVOID lpParam)
 			log_event_log_message(L"#INIT# navigate to " + urlW, EVENTLOG_INFORMATION_TYPE, event_log_source_name);
 		}
 
-		unsigned int len = message.length();
+		size_t len = message.length();
 
 		std::cout << char(len >> 0)
 			<< char(len >> 8)
