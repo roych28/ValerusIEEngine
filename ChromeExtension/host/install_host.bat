@@ -7,3 +7,6 @@
 REG ADD "HKCU\Software\Google\Chrome\NativeMessagingHosts\com.vicon.valerus.app" /ve /t REG_SZ /d "%~dp0com.vicon.valerus.app.json" /f
 REG ADD "HKCU\Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION" /v ValrusIEEngine.exe /t REG_DWORD /d 11000 /f
 REG ADD "HKCU\SOFTWARE\Policies\Google\Chrome" /v  HardwareAccelerationModeEnabled /t REG_DWORD /d 0 /f
+REG ADD "HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\Main" /v TabProcGrowth /t REG_SZ /d "1" /f
+
+pause
