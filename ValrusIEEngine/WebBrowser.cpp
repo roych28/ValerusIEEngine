@@ -5,6 +5,7 @@
 #include <mshtml.h>
 #include <comdef.h>
 #include "EventSink.h"
+#include <Wininet.h>
 
 _COM_SMARTPTR_TYPEDEF(IHTMLDocument2, IID_IHTMLDocument2);
 _COM_SMARTPTR_TYPEDEF(IHTMLDocument3, IID_IHTMLDocument3);
@@ -71,6 +72,7 @@ bool WebBrowser::CreateBrowser()
 
 	ConnectEventSink();
 
+	
 	return TRUE;
 }
 
@@ -86,7 +88,7 @@ void WebBrowser::ConnectEventSink()
 	if (FAILED(hr)) 
 		return; // If we couldn't get it, abort
 	
-				// Now we use the IConnectionPointContainer interface to get an IConnectionPoint interface pointer that will handle DWebBrowserEvents2 "dispatch interface" events.
+	// Now we use the IConnectionPointContainer interface to get an IConnectionPoint interface pointer that will handle DWebBrowserEvents2 "dispatch interface" events.
 	// That means we have to plug our implementation of DWebBrowserEvents2 into the returned IConnectionPoint interface using its Advise() method, as below
 	hr = pCPC->FindConnectionPoint(DIID_DWebBrowserEvents2, &pCP);
 	if (FAILED(hr)) { // If it failed, release the pCPC interface pointer and abort
@@ -156,8 +158,22 @@ void WebBrowser::Refresh()
 	this->webBrowser2->Refresh();
 }
 
+
+
 void WebBrowser::Navigate(wstring szUrl)
 {
+	std::wstring domain = szUrl;
+	std::string::size_type i = szUrl.find(L"http://");
+
+	if (i != std::string::npos)
+		domain.erase(i, 7); //remove http://
+
+	//unsigned long rescd;
+	if (InternetSetPerSiteCookieDecision(domain.c_str(), COOKIE_STATE_DOWNGRADE))
+	{
+		log_event_log_message(L"WebBrowser::Navigate InternetSetPerSiteCookieDecision: ", EVENTLOG_INFORMATION_TYPE, event_log_source_name);
+	}
+
 	bstr_t url(szUrl.c_str());
 	variant_t flags(0x02u); //navNoHistory
     HRESULT res = this->webBrowser2->Navigate(url, 0, 0, 0, 0);

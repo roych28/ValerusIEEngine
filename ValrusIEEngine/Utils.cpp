@@ -1097,6 +1097,15 @@ BOOL SetcharVal(HKEY Key, LPCWSTR subkey, LPCWSTR StringName, LPCWSTR Stringdata
 	return setRes;
 }
 
+std::wstring Utils::GetDomainFromURL(std::wstring url)
+{
+	wchar_t domain[1024];
+
+	int retLen = swscanf_s(url.c_str(), L"http://%[^/]", domain);
+
+	return std::wstring(domain);
+}
+
 /*wchar_t* GetCharVal(HKEY Key, LPCWSTR subkey, LPCWSTR StringName)
 {
 	DWORD dwType = REG_SZ;

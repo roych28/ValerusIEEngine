@@ -10,5 +10,6 @@ public:
 	static const char* getMessageAsString(unsigned int messagenumber);
 	static void SetIntVal(HKEY hKey, LPCTSTR lpValue, DWORD data);
 	static HKEY OpenKey(HKEY hRootKey, LPCWSTR strKey);
+	static std::wstring GetDomainFromURL(std::wstring url);
 };
 
