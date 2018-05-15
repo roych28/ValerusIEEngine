@@ -117,9 +117,17 @@ bool MainFrame::Init()
 	return true; 
 }
 
+void MainFrame::InjectMessage(LPMSG msg)
+{
+	if (This->webBrowser)
+	{
+		This->webBrowser->InjectMessage(msg);
+	}
+}
+
 LRESULT CALLBACK MainFrame::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	//DLog("WndProc %s\r\n", Utils::getMessageAsString(uMsg));
+	DLog("WndProc %s\r\n", Utils::getMessageAsString(uMsg));
 	switch (uMsg)
 	{
 	case WM_WEB_CONTROL_MESSAGE:

@@ -29,5 +29,7 @@ public:
 	~MainFrame();
 
 	bool Init();
+
+	void InjectMessage(LPMSG msg);
 };
 

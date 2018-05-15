@@ -72,8 +72,6 @@ bool WebBrowser::CreateBrowser()
 	//this->webBrowser2->put_RegisterAsBrowser(VARIANT_TRUE);
 
 	ConnectEventSink();
-
-	
 	return TRUE;
 }
 
@@ -508,6 +506,22 @@ HRESULT STDMETHODCALLTYPE WebBrowser::Stat(
 	DWORD grfStatFlag)
 {
 	return E_NOTIMPL;
+}
+
+void WebBrowser::InjectMessage(LPMSG msg)
+{
+	IOleInPlaceActiveObject* pIOIPAO;
+	HRESULT hr = this->webBrowser2->QueryInterface(IID_IOleInPlaceActiveObject, (void**)&pIOIPAO);
+	if (SUCCEEDED(hr))
+	{
+		/*MSG msg;
+		msg.message = uMsg;
+		msg.wParam = wParam;
+		msg.lParam = lParam;*/
+
+		pIOIPAO->TranslateAccelerator(msg);
+		pIOIPAO->Release();
+	}
 }
 
 

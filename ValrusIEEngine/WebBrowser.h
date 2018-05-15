@@ -179,8 +179,8 @@ public:
 		__RPC__out STATSTG *pstatstg,
 		DWORD grfStatFlag) override;
 
-	bool TryAttachClickEvents();
 	void ConnectEventSink();
+	void InjectMessage(LPMSG msg);
 protected:
 
 	IOleObject* oleObject;
