@@ -6,6 +6,7 @@
 #include <comdef.h>
 #include "EventSink.h"
 #include <Wininet.h>
+#include "Utils.h"
 
 _COM_SMARTPTR_TYPEDEF(IHTMLDocument2, IID_IHTMLDocument2);
 _COM_SMARTPTR_TYPEDEF(IHTMLDocument3, IID_IHTMLDocument3);
@@ -169,10 +170,26 @@ void WebBrowser::Navigate(wstring szUrl)
 		domain.erase(i, 7); //remove http://
 
 	//unsigned long rescd;
-	if (InternetSetPerSiteCookieDecision(domain.c_str(), COOKIE_STATE_DOWNGRADE))
+	if (!InternetSetPerSiteCookieDecision(domain.c_str(), COOKIE_STATE_DOWNGRADE))
 	{
+		DWORD e = GetLastError();
 		log_event_log_message(L"WebBrowser::Navigate InternetSetPerSiteCookieDecision: ", EVENTLOG_INFORMATION_TYPE, event_log_source_name);
 	}
+
+	/*HRESULT hr;
+	BOOL bProtectedMode = FALSE;
+
+	hr = IEIsProtectedModeProcess(&bProtectedMode);
+
+	if (SUCCEEDED(hr) && bProtectedMode)
+	{
+		// IE is running in protected mode
+	}
+	else 
+	{
+		// IE isn't running in protected mode
+	}*/
+		
 
 	bstr_t url(szUrl.c_str());
 	variant_t flags(0x02u); //navNoHistory
