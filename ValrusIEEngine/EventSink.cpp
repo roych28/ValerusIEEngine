@@ -7,7 +7,11 @@
 
 #include "stdafx.h"
 #include "EventSink.h"
-
+#include <comdef.h>
+#include <Exdisp.h>
+#include <string>
+#include <tchar.h>
+#include <Windows.h>
 // The single global object of CEventSink
 CEventSink EventSink;
 
@@ -87,11 +91,17 @@ STDMETHODIMP CEventSink::Invoke(DISPID dispIdMember,REFIID riid,LCID lcid,WORD w
 	if (dispIdMember == DISPID_NEWWINDOW3) 
 	{
 		VariantChangeType(&v[0], &pDispParams->rgvarg[0], 0, VT_BSTR);			// url
-
+		VariantChangeType(&v[1], &pDispParams->rgvarg[1], 0, VT_BSTR);			// TargetFrameName		
+		VariantChangeType(&v[2], &pDispParams->rgvarg[2], 0, VT_I4);			// Flags
+		VariantChangeType(&v[3], &pDispParams->rgvarg[3], 0, VT_BOOL);			//prevent new window in explorer
+		VariantChangeType(&v[4], &pDispParams->rgvarg[4], 0, VT_UI1 | VT_ARRAY); // PostData
+		VariantChangeType(&v[5], &pDispParams->rgvarg[5], 0, VT_BSTR);			// Headers
 		*(pDispParams->rgvarg[3].pboolVal) = VARIANT_TRUE;						//prevent new window in explorer
 		
 		TCHAR urlStr[1024];
 		wsprintf(urlStr, _T("%ls"), (LPOLESTR)v[0].bstrVal);
+
+		getCookie();
 
 		::SendMessage(m_parentHWND, WM_WEB_CONTROL_MESSAGE, dispIdMember, (LPARAM)urlStr);
 	}
@@ -102,9 +112,41 @@ STDMETHODIMP CEventSink::Invoke(DISPID dispIdMember,REFIID riid,LCID lcid,WORD w
 	return S_OK;
 }
 
-void CEventSink::SetParentHWND(HWND p)
+void CEventSink::SetParentHWND(HWND p, IWebBrowser2* iwb2)
 {
 	m_parentHWND = p;
+	m_webBrowser2 = iwb2;
+}
+
+void CEventSink::getCookie()
+{
+	IWebBrowser2* webBrowser2 = m_webBrowser2;// browserWindow_->GetWebBrowser2();
+	IDispatchPtr documentDispatch;
+	HRESULT hr = webBrowser2->get_Document(&documentDispatch);
+	if (FAILED(hr) || !documentDispatch) {
+		//		LOG_WARNING << "ClickEvents::Invoke() failed: "
+		//		"get_Document() failed";
+		return;
+	}
+	IHTMLDocument2Ptr htmlDocument2;
+	hr = documentDispatch->QueryInterface(IID_IHTMLDocument2,
+		(void**)&htmlDocument2);
+	if (FAILED(hr) || !htmlDocument2) {
+		//		LOG_WARNING << "ClickEvents::Invoke() failed: "
+		//		"QueryInterface(IHTMLDocument2) failed";
+		return;
+	}
+
+	_bstr_t cookie;
+	hr = htmlDocument2->get_cookie(&cookie.GetBSTR());
+
+	if (FAILED(hr) || !htmlDocument2) {
+		//		LOG_WARNING << "ClickEvents::Invoke() failed: "
+		//		"QueryInterface(IHTMLDocument2) failed";
+		return;
+	}
+
+
 }
 /*
 

@@ -1,5 +1,6 @@
 #include <Exdisp.h>
 #include <Exdispid.h>
+#include <MsHTML.h>
 
 class CEventSink : public DWebBrowserEvents2 {
 public:
@@ -14,10 +15,12 @@ public:
 	STDMETHODIMP GetIDsOfNames(REFIID riid,LPOLESTR *rgszNames,UINT cNames,LCID lcid,DISPID *rgDispId);
 	STDMETHODIMP Invoke(DISPID dispIdMember,REFIID riid,LCID lcid,WORD wFlags,DISPPARAMS *pDispParams,VARIANT *pVarResult,EXCEPINFO *pExcepInfo,UINT *puArgErr);
 	// DWebBrowserEvents2 does not have any methods, IE calls our Invoke() method to notify us of events
-	void SetParentHWND(HWND p);
+	void SetParentHWND(HWND p, IWebBrowser2* iwb2);
 protected:
-	
-	HWND m_parentHWND;
+	void			getCookie();
+
+	HWND			m_parentHWND;
+	IWebBrowser2*	m_webBrowser2;
 };
 
 // We only have one global object of this

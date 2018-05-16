@@ -43,7 +43,7 @@ HRESULT STDMETHODCALLTYPE ClickEvents::GetIDsOfNames(
 	/* [in] */ LPOLESTR *rgszNames,
 	/* [in] */ UINT cNames,
 	/* [in] */ LCID lcid,
-	/* [out] */ DISPID *rgDispId) {
+	/* [out] */ DISPID *rgDispId) { 
 	return E_NOTIMPL;
 }
 

@@ -95,7 +95,7 @@ void WebBrowser::ConnectEventSink()
 		return;
 	}
 
-	EventSink.SetParentHWND(m_hWndParent);
+	EventSink.SetParentHWND(m_hWndParent, webBrowser2);
 	// Finally we can plug our event handler object EventSink into the connection point and start receiving IE events
 	// The advise cookie is just a return value we use when we want to "unplug" our event handler object from the connection point
 	pCP->Advise((IUnknown*)&EventSink, &adviseCookie);
