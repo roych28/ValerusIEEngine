@@ -42,7 +42,7 @@ void updateIERegHKCU(std::wstring key, int val)
 {
 	std::wstring fullPathKey = L"Software\\Microsoft\\Internet Explorer\\Main\\FeatureControl\\" + key;
 	HKEY hKey = Utils::OpenKey(HKEY_CURRENT_USER, fullPathKey.c_str());
-	Utils::SetIntVal(hKey, L"ValrusIEEngine.exe", val);
+	Utils::SetIntVal(hKey, L"ValerusIEEngine.exe", val);
 	RegCloseKey(hKey);
 }
 

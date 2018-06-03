@@ -20,7 +20,7 @@ void install_event_log_source(const std::wstring& a_name)
 
 	if (ERROR_SUCCESS == last_error)
 	{
-		BYTE exe_path[] = "C:\\Users\\roych\\source\\repos\\vicon\\Debug\\ValrusIEEngine.exe";
+		BYTE exe_path[] = "C:\\Users\\roych\\source\\repos\\vicon\\Debug\\ValerusIEEngine.exe";
 		DWORD last_error;
 		const DWORD types_supported = EVENTLOG_ERROR_TYPE |
 			EVENTLOG_WARNING_TYPE |
