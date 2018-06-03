@@ -13,6 +13,67 @@ _COM_SMARTPTR_TYPEDEF(IHTMLDocument3, IID_IHTMLDocument3);
 _COM_SMARTPTR_TYPEDEF(IHTMLElement, IID_IHTMLElement);
 _COM_SMARTPTR_TYPEDEF(IHTMLElement2, IID_IHTMLElement2);
 
+void BrowserThread(void* pParams)
+{
+	//OleInitialize(NULL);
+	/*BROWSER_INFO *pBrowserInfo = (BROWSER_INFO *)pParams;
+
+	HRESULT hr;
+	HICON hIcon;
+	CLSID clsid;
+	LPUNKNOWN punk = NULL;
+	CLSIDFromProgID(OLESTR("InternetExplorer.Application"), &clsid);
+	hr = CoCreateInstance(clsid, NULL, CLSCTX_SERVER, IID_IUnknown, (LPVOID *)&punk);
+	if (SUCCEEDED(hr))
+	{
+		punk->QueryInterface(IID_IWebBrowser2, (LPVOID *)&m_pInetExplorer);
+		punk->Release();
+		VARIANT vars[4];
+		memset(vars, 0, sizeof(vars));
+		bstr_t BStrURL((const char *)(pBrowserInfo->zUrl));
+		//BSTR BStrURL = _com_util::ConvertStringToBSTR((const char *)(pBrowserInfo->zUrl));
+		if (IsIE7())
+			m_pInetExplorer->put_Resizable(VARIANT_TRUE);
+		else
+			m_pInetExplorer->put_Resizable(VARIANT_FALSE);
+		m_pInetExplorer->put_ToolBar(FALSE);
+		m_pInetExplorer->put_AddressBar(VARIANT_FALSE);
+		m_pInetExplorer->put_MenuBar(VARIANT_FALSE);
+		m_pInetExplorer->put_StatusBar(VARIANT_FALSE);
+		m_pInetExplorer->put_Width(pBrowserInfo->nWidth);
+		m_pInetExplorer->put_Height(pBrowserInfo->nHeight);
+
+		m_pInetExplorer->put_Visible(VARIANT_TRUE);
+		HRESULT hrie = m_pInetExplorer->Navigate(BStrURL, vars, vars + 1, vars + 2, vars + 3);
+		SysFreeString(BStrURL);
+		if (SUCCEEDED(hrie))
+		{
+			VARIANT_BOOL bBusy = VARIANT_TRUE;
+			while (bBusy == VARIANT_TRUE)
+			{
+				Sleep(500);
+				m_pInetExplorer->get_Busy(&bBusy);
+			}
+			HWND hWnd = NULL;
+			m_pInetExplorer->get_HWND((long*)(&hWnd));
+			if (IsWindow(hWnd) && pBrowserInfo->hIcon != NULL)
+			{
+				hIcon = pBrowserInfo->hIcon;
+				SendMessage(hWnd, WM_SETICON, (WPARAM)ICON_SMALL, (LPARAM)hIcon);
+			}
+			//	Do other interesting IE stuff here while the window is valid.
+			//			while(IsWindow(hWnd))
+			//			{
+			//					Sleep(500);
+			//					m_pInetExplorer->get_HWND ((long*)(&hWnd));
+			//			}
+		}
+		m_pInetExplorer->Release();
+	}
+	OleUninitialize();*/
+	// thread exiting.
+}
+
 WebBrowser::WebBrowser(HWND _hWndParent)
 {
 	iComRefCount = 0;
@@ -188,10 +249,18 @@ void WebBrowser::Navigate(wstring szUrl)
 		// IE isn't running in protected mode
 	}*/
 		
+	VARIANT vURL;
+	vURL.vt = VT_BSTR;
+	vURL.bstrVal = ::SysAllocString(szUrl.c_str());
 
-	bstr_t url(szUrl.c_str());
-	variant_t flags(0x02u); //navNoHistory
-    HRESULT res = this->webBrowser2->Navigate(url, 0, 0, 0, 0);
+	VARIANT vEmpty;
+	vEmpty.vt = VT_EMPTY;
+
+	HRESULT res = this->webBrowser2->Navigate2(&vURL, &vEmpty, &vEmpty, &vEmpty, &vEmpty);
+
+	//bstr_t url(szUrl.c_str());
+	//variant_t flags(0x02u); //navNoHistory
+    //HRESULT res = this->webBrowser2->Navigate(url, 0, 0, 0, 0);
 
 	this->webBrowser2->put_Visible(VARIANT_TRUE);
 

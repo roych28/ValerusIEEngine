@@ -197,6 +197,8 @@ protected:
 
 	IConnectionPoint *pCP;
 	DWORD adviseCookie;
+
+	IOleInPlaceObject          * m_pInPlaceObject;
 };
 
 
