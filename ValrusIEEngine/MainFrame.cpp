@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <string>
+#include <Sddl.h>
 
 #include "WebBrowser.h"
 #include "ProcessMessage.h"
@@ -45,6 +46,38 @@ void updateIERegHKCU(std::wstring key, int val)
 	Utils::SetIntVal(hKey, L"ValerusIEEngine.exe", val);
 	RegCloseKey(hKey);
 }
+
+BOOL GetLaunchActPermissionsWithIL(SECURITY_DESCRIPTOR **ppSD)
+{
+	// Allow World Local Launch/Activation permissions. Label the SD for LOW IL Execute UP
+	SECURITY_DESCRIPTOR* pSD = NULL;
+	LPWSTR lpszSDDL = L"O:BAG:BADSadA;;0xb;;;WD)SSadML;;NX;;;LW)";
+	if (ConvertStringSecurityDescriptorToSecurityDescriptorW(lpszSDDL, SDDL_REVISION_1, (PSECURITY_DESCRIPTOR *)&pSD, NULL))
+	{
+		*ppSD = pSD;
+		return TRUE;
+	}
+
+	return FALSE;
+}
+
+BOOL SetLaunchActPermissions(HKEY hkey, PSECURITY_DESCRIPTOR pSD)
+{
+	BOOL bResult = FALSE;
+	DWORD dwLen = GetSecurityDescriptorLength(pSD);
+	LONG lResult;
+	lResult = RegSetValueExA(hkey,
+		"LaunchPermission",
+		0,
+		REG_BINARY,
+		(BYTE*)pSD,
+		dwLen);
+	if (lResult != ERROR_SUCCESS) goto done;
+	
+	bResult = TRUE;
+done:
+	return bResult;
+};
 
 bool MainFrame::Init()
 {
@@ -113,6 +146,15 @@ bool MainFrame::Init()
 	updateIERegHKCU(L"FEATURE_WINDOW_RESTRICTIONS", 1);
 	updateIERegHKCU(L"FEATURE_XSSFILTER", 1);
 	updateIERegHKCU(L"FEATURE_ZONE_ELEVATION", 1);
+
+	HKEY appIDKey;
+	if (ERROR_SUCCESS == RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("Software\\Classes\\AppID\\{B3670687-A8EB-4F5D-AC08-1B97F2D11DAB}"), 0, KEY_WRITE, &appIDKey))
+	{
+		SECURITY_DESCRIPTOR* pSD;
+		if (GetLaunchActPermissionsWithIL(&pSD))
+			SetLaunchActPermissions(appIDKey, pSD);
+		RegCloseKey(appIDKey);
+	}
 
 	return true; 
 }

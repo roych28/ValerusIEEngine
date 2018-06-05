@@ -50,7 +50,6 @@ INT WINAPI WinMain(HINSTANCE hInstance,
 	LPSTR lpCmdLine,
 	INT nCmdShow)
 {
-
 	OleInitialize(NULL);
 
 	install_event_log_source(event_log_source_name);
