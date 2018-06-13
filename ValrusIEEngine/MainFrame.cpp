@@ -253,10 +253,24 @@ BOOL CALLBACK MainFrame::EnumWindowsProc(HWND hwnd, LPARAM lpParam)
 	{
 		This->hwndChrome = hwnd;	
 
-		DWORD ps = GetWindowLong(This->hwndChrome, GWL_WNDPROC);
+		//DWORD ps = GetWindowLong(This->hwndChrome, GWL_WNDPROC);
 		::EnumChildWindows(This->hwndChrome, EnumWindowsChildrenProc, NULL);
-		SetWindowLong(This->hwndChrome, GWL_EXSTYLE, GetWindowLong(This->hwndChrome, GWL_EXSTYLE) | WS_EX_LAYERED);
+		//SetWindowLong(This->hwndChrome, GWL_EXSTYLE, GetWindowLong(This->hwndChrome, GWL_EXSTYLE) | WS_EX_LAYERED);
 		
+		//DWORD style1 = GetWindowLong(This->hwndChrome, GWL_STYLE);
+		//char buf11[100];
+		//_itoa(style1, buf11, 10);
+		//::MessageBoxA(NULL, buf11, buf11, MB_OK);
+
+		//style1 = style1 & ~(WS_CLIPCHILDREN);
+		//style1 = style1 | WS_CHILD;// | ;
+		SetWindowLong(This->hwndChrome, GWL_STYLE, 365887488);
+
+		DWORD style1 = GetWindowLong(This->hwndChrome, GWL_EXSTYLE);
+		char buf11[100];
+		_itoa(style1, buf11, 10);
+		//::MessageBoxA(NULL, buf11, buf11, MB_OK);
+
 		DWORD style = GetWindowLong(This->hWndMain, GWL_STYLE);
 		style = style & ~(WS_POPUP);
 		style = style | WS_CHILD;// | WS_CLIPSIBLINGS;
@@ -293,6 +307,12 @@ BOOL CALLBACK MainFrame::EnumWindowsProc(HWND hwnd, LPARAM lpParam)
 	}
 
 	return TRUE;
+}
+
+void CALLBACK MainFrame::timerfn(HWND hwnd, UINT uMsg, UINT timerId, DWORD dwTime)
+{
+	::SendMessage(This->hWndMain, WM_PAINT, 0, 0);
+	::SendMessage(This->hwndChrome, WM_PAINT, 0, 0);
 }
 
 DWORD WINAPI MainFrame::PipelineThreadFunction(LPVOID lpParam)
@@ -357,6 +377,8 @@ DWORD WINAPI MainFrame::PipelineThreadFunction(LPVOID lpParam)
 			This->windowTitle = std::wstring(windowTitleA.begin(), windowTitleA.end());
 			::Sleep(50); //wait for window title to update
 			EnumWindows(MainFrame::EnumWindowsProc, NULL);
+
+			SetTimer(This->hWndMain, 0 , 30, (TIMERPROC)&timerfn);
 		}
 		else if (This->parsedValues["command"] == "#ONMOVE#")
 		{
@@ -369,11 +391,14 @@ DWORD WINAPI MainFrame::PipelineThreadFunction(LPVOID lpParam)
 			This->SetIEWindowShow(true);
 			This->SetIEWindowSize();
 			
-			::UpdateWindow(This->hwndChrome);
-			::UpdateWindow(This->hWndMain);
+			//::UpdateWindow(This->hwndChrome);
+			//::UpdateWindow(This->hWndMain);
 			This->webBrowser->Navigate(urlW);
-			//::SetParent(This->hWndMain, This->hwndChrome);
 
+			::SendMessage(This->hWndMain, WM_PAINT, 0, 0);
+			//::SendMessage(This->hwndChrome, WM_PAINT, 0, 0);
+			
+			::SetFocus(This->hWndMain);
 			log_event_log_message(L"#INIT# navigate to " + urlW, EVENTLOG_INFORMATION_TYPE, event_log_source_name);
 		}
 

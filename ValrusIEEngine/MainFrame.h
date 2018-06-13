@@ -17,6 +17,7 @@ private:
 
 	ATOM RegMainClass();
 
+	static void CALLBACK MainFrame::timerfn(HWND hwnd, UINT uMsg, UINT timerId, DWORD dwTime);
 	static DWORD WINAPI  PipelineThreadFunction(LPVOID lpParam);
 	static BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lpParam);
 	static BOOL CALLBACK EnumWindowsChildrenProc(HWND hwnd, LPARAM lpParam);

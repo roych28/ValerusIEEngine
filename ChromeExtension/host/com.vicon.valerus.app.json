@@ -1,7 +1,7 @@
 {
   "name": "com.vicon.valerus.app",
   "description": "IE11 Wrapper",
-  "path": "NATIVE_EXE_PATH",
+  "path": "C:\\1dev\\ValerusIEEngine\\Debug\\ValrusIEEngine.exe",
   "type": "stdio",
   "allowed_origins": [ "chrome-extension://lioodinblkkgcgffkgleihgkbhmmcbfg/", "chrome-extension://biaidifgnfeaniiiemaofgbgflffhgdn/", "chrome-extension://omfoabjiohaoglgimheiknfmmlfdhpke/" ]
 }
