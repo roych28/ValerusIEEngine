@@ -96,6 +96,7 @@ void WebBrowser::ConnectEventSink()
 	}
 
 	EventSink.SetParentHWND(m_hWndParent);
+	EventSink.SetParentIWebBrowser2(webBrowser2);
 	// Finally we can plug our event handler object EventSink into the connection point and start receiving IE events
 	// The advise cookie is just a return value we use when we want to "unplug" our event handler object from the connection point
 	pCP->Advise((IUnknown*)&EventSink, &adviseCookie);
@@ -157,11 +158,9 @@ void WebBrowser::Refresh()
 	this->webBrowser2->Refresh();
 }
 
-
-
 void WebBrowser::Navigate(wstring szUrl)
 {
-	std::wstring domain = szUrl;
+	/*std::wstring domain = szUrl;
 	std::string::size_type i = szUrl.find(L"http://");
 
 	if (i != std::string::npos)
@@ -394,6 +393,7 @@ HRESULT STDMETHODCALLTYPE WebBrowser::CreateStream(
 	DWORD reserved2,
 	__RPC__deref_out_opt IStream **ppstm)
 {
+	log_event_log_message(L"WebBrowser::Navigate InternetSetPerSiteCookieDecision: ", EVENTLOG_INFORMATION_TYPE, event_log_source_name);
 	return E_NOTIMPL;
 }
 
@@ -404,6 +404,7 @@ HRESULT STDMETHODCALLTYPE WebBrowser::OpenStream(
 	DWORD reserved2,
 	IStream **ppstm)
 {
+	log_event_log_message(L"WebBrowser::OpenStream: ", EVENTLOG_INFORMATION_TYPE, event_log_source_name);
 	return E_NOTIMPL;
 }
 
@@ -414,6 +415,7 @@ HRESULT STDMETHODCALLTYPE WebBrowser::CreateStorage(
 	DWORD reserved2,
 	__RPC__deref_out_opt IStorage **ppstg)
 {
+	log_event_log_message(L"WebBrowser::CreateStorage: ", EVENTLOG_INFORMATION_TYPE, event_log_source_name);
 	return E_NOTIMPL;
 }
 
@@ -425,6 +427,7 @@ HRESULT STDMETHODCALLTYPE WebBrowser::OpenStorage(
 	DWORD reserved,
 	__RPC__deref_out_opt IStorage **ppstg)
 {
+	log_event_log_message(L"WebBrowser::OpenStorage: ", EVENTLOG_INFORMATION_TYPE, event_log_source_name);
 	return E_NOTIMPL;
 }
 

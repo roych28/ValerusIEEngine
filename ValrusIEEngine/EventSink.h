@@ -15,9 +15,11 @@ public:
 	STDMETHODIMP Invoke(DISPID dispIdMember,REFIID riid,LCID lcid,WORD wFlags,DISPPARAMS *pDispParams,VARIANT *pVarResult,EXCEPINFO *pExcepInfo,UINT *puArgErr);
 	// DWebBrowserEvents2 does not have any methods, IE calls our Invoke() method to notify us of events
 	void SetParentHWND(HWND p);
+	void SetParentIWebBrowser2(IWebBrowser2* browser);
 protected:
 	
 	HWND m_parentHWND;
+	IWebBrowser2* webBrowser;
 };
 
 // We only have one global object of this

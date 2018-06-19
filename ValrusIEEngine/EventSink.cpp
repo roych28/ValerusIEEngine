@@ -7,7 +7,9 @@
 
 #include "stdafx.h"
 #include "EventSink.h"
-
+#include <atlcomcli.h>
+#include <mshtml.h>
+#include <comdef.h>
 // The single global object of CEventSink
 CEventSink EventSink;
 
@@ -84,6 +86,57 @@ STDMETHODIMP CEventSink::Invoke(DISPID dispIdMember,REFIID riid,LCID lcid,WORD w
 	for(n=0;n<5;n++) 
 		VariantInit(&v[n]);
 
+	if (dispIdMember == DISPID_DOCUMENTCOMPLETE)
+	{
+		if (!webBrowser) 
+			return E_FAIL;
+		IDispatch *idisp; webBrowser->get_Document(&idisp);
+		//if (idisp && !doc) 
+		//	idisp->QueryInterface(IID_IHTMLDocument, (void**)&doc);
+		IWebBrowser2* webBrowser2 = webBrowser;// browserWindow_->GetWebBrowser2();
+		IDispatchPtr documentDispatch;
+		HRESULT hr = webBrowser2->get_Document(&documentDispatch);
+		if (FAILED(hr) || !documentDispatch) {
+			//		LOG_WARNING << "ClickEvents::Invoke() failed: "
+			//		"get_Document() failed";
+			return E_FAIL;
+		}
+		IHTMLDocument2Ptr htmlDocument2;
+		hr = documentDispatch->QueryInterface(IID_IHTMLDocument2,
+			(void**)&htmlDocument2);
+		if (FAILED(hr) || !htmlDocument2) {
+			//		LOG_WARNING << "ClickEvents::Invoke() failed: "
+			//		"QueryInterface(IHTMLDocument2) failed";
+			return E_FAIL;
+		}
+		IHTMLWindow2Ptr htmlWindow2;
+		hr = htmlDocument2->get_parentWindow(
+			static_cast<IHTMLWindow2**>(&htmlWindow2));
+		if (FAILED(hr) || !htmlWindow2) {
+			return E_FAIL;
+		}
+
+		CComQIPtr<IHTMLWindow6, &IID_IHTMLWindow6> spHTMLWin6 = htmlWindow2;
+		CComQIPtr<IHTMLStorage, &IID_IHTMLStorage> spHTMLStorage;
+		hr = spHTMLWin6->get_sessionStorage(&spHTMLStorage);
+
+		//hr = spHTMLStorage->getItem(L"token", &v[0]);
+
+		/*IHTMLDocument2 doc;
+		if (idisp && !doc2) 
+			idisp->QueryInterface(IID_IHTMLDocument2, (void**)&doc2);
+		if (doc2 && !win2) 
+			doc2->get_parentWindow(&win2);*/
+		//IConnectionPointContainer *cpc = 0; if (doc) doc->QueryInterface(IID_IConnectionPointContainer, (void**)&cpc);
+		//IConnectionPoint* cp = 0; 
+		//if (cpc) cpc->FindConnectionPoint(DIID_HTMLDocumentEvents2, &cp);
+		//DWORD cookie; HRESULT hr; if (cp) hr = cp->Advise(static_cast<IDispatch*>(this), &cookie);
+		//if (cp) cp->Release(); if (cpc) cpc->Release(); if (idisp) idisp->Release();
+		//if (!doc || !doc2 || !win2 || hr != S_OK) { release(); return E_FAIL; }
+
+		return NOERROR;
+	}
+
 	if (dispIdMember == DISPID_NEWWINDOW3) 
 	{
 		VariantChangeType(&v[0], &pDispParams->rgvarg[0], 0, VT_BSTR);			// url
@@ -95,6 +148,24 @@ STDMETHODIMP CEventSink::Invoke(DISPID dispIdMember,REFIID riid,LCID lcid,WORD w
 
 		::SendMessage(m_parentHWND, WM_WEB_CONTROL_MESSAGE, dispIdMember, (LPARAM)urlStr);
 	}
+	else if (dispIdMember == DISPID_DOCUMENTCOMPLETE)
+	{
+		/*CComQIPtr<IDispatch, &IID_IDispatch> spDisp;
+		HRESULT hr = webBrowser2->get_Document(&spDisp);
+		CComQIPtr<IHTMLDocument2, &IID_IHTMLDocument2> spHTMLDoc;
+		spHTMLDoc = spDisp;
+		if (spHTMLDoc)
+		{
+			CComQIPtr<IHTMLWindow2, &IID_IHTMLWindow2> spHTMLWin2;
+			HRESULT hr = spHTMLDoc->get_parentWindow(&spHTMLWin2);
+			if (SUCCEEDED(hr))
+			{
+				CComQIPtr<IHTMLWindow6, &IID_IHTMLWindow6> spHTMLWin6 = spHTMLWin2;
+				CComQIPtr<IHTMLStorage, &IID_IHTMLStorage> spHTMLStorage;
+				HRESULT hr = spHTMLWin6->get_sessionStorage(&spHTMLStorage);
+			}
+		}*/
+	}
 
 	for(n=0;n<5;n++) 
 		VariantClear(&v[n]);
@@ -105,6 +176,11 @@ STDMETHODIMP CEventSink::Invoke(DISPID dispIdMember,REFIID riid,LCID lcid,WORD w
 void CEventSink::SetParentHWND(HWND p)
 {
 	m_parentHWND = p;
+}
+
+void CEventSink::SetParentIWebBrowser2(IWebBrowser2* browser)
+{
+	webBrowser = browser;
 }
 /*
 
