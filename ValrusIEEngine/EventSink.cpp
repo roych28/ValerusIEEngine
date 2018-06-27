@@ -120,7 +120,14 @@ STDMETHODIMP CEventSink::Invoke(DISPID dispIdMember,REFIID riid,LCID lcid,WORD w
 		CComQIPtr<IHTMLStorage, &IID_IHTMLStorage> spHTMLStorage;
 		hr = spHTMLWin6->get_sessionStorage(&spHTMLStorage);
 
-		//hr = spHTMLStorage->getItem(L"token", &v[0]);
+		if (FAILED(hr) || !spHTMLStorage) {
+			return E_FAIL;
+		}
+
+		_bstr_t hrefAttr(L"token");
+		VARIANT attrValue;
+		VariantInit(&attrValue);
+		hr = spHTMLStorage->getItem(L"token", &attrValue);
 
 		/*IHTMLDocument2 doc;
 		if (idisp && !doc2) 

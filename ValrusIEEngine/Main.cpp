@@ -55,7 +55,9 @@ INT WINAPI WinMain(HINSTANCE hInstance,
 	install_event_log_source(event_log_source_name);
 
 	//CreateIEProcess();
-
+	int timer = 0;
+	while (timer < 1000000)
+		timer++;
 	MainFrame* mf = new MainFrame(hInstance);
 	if (!mf->Init())
 	{
