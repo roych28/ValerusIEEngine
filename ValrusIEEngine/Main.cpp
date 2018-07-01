@@ -11,40 +11,6 @@
 HANDLE hProcessie = INVALID_HANDLE_VALUE;
 DWORD processId = -1L;
 
-void CreateIEProcess()
-{
-	SECURITY_ATTRIBUTES Security = { sizeof(SECURITY_ATTRIBUTES), NULL, TRUE };
-	STARTUPINFO si = { sizeof(STARTUPINFO), 0 };
-	PROCESS_INFORMATION pi;
-	memset(&pi, 0, sizeof(pi));
-
-	TCHAR lpDirectory[MAX_PATH];
-	TCHAR lpCommandLine[MAX_PATH];
-
-	// avoid hard-coding your program files directory name. But here I do as you do.
-	//lstrcpy(lpDirectory, TEXT("C:\\Program Files (x86)\\Internet Explorer"));
-	lstrcpy(lpDirectory, TEXT("C:\\Users\\roych\\AppData\\Local\\IE Tab\\11.3.17.1"));
-	lstrcpy(lpCommandLine, lpDirectory);
-	lstrcat(lpCommandLine, TEXT("\\ietabhelper.exe"));
-
-	if (CreateProcess(
-		NULL,  // it will get the app name from the next argument
-		lpCommandLine,
-		&Security,
-		&Security,
-		FALSE,  // IE doesn't need your open handles
-		CREATE_NEW_PROCESS_GROUP,
-		NULL,  // inherit current environment
-		NULL,
-		&si,
-		&pi))
-	{
-		DWORD res = WaitForSingleObject(pi.hProcess, INFINITE);
-		processId = pi.dwProcessId;
-		hProcessie = pi.hProcess;
-	}
-}
-
 INT WINAPI WinMain(HINSTANCE hInstance,
 	HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine,
@@ -54,9 +20,8 @@ INT WINAPI WinMain(HINSTANCE hInstance,
 
 	install_event_log_source(event_log_source_name);
 
-	//CreateIEProcess();
 	int timer = 0;
-	while (timer < 1000000)
+	while (timer < 100000000)
 		timer++;
 	MainFrame* mf = new MainFrame(hInstance);
 	if (!mf->Init())
@@ -95,3 +60,37 @@ event_log_source_name);
 //
 
 */
+/*
+void CreateIEProcess()
+{
+	SECURITY_ATTRIBUTES Security = { sizeof(SECURITY_ATTRIBUTES), NULL, TRUE };
+	STARTUPINFO si = { sizeof(STARTUPINFO), 0 };
+	PROCESS_INFORMATION pi;
+	memset(&pi, 0, sizeof(pi));
+
+	TCHAR lpDirectory[MAX_PATH];
+	TCHAR lpCommandLine[MAX_PATH];
+
+	// avoid hard-coding your program files directory name. But here I do as you do.
+	//lstrcpy(lpDirectory, TEXT("C:\\Program Files (x86)\\Internet Explorer"));
+	lstrcpy(lpDirectory, TEXT("C:\\Users\\roych\\AppData\\Local\\IE Tab\\11.3.17.1"));
+	lstrcpy(lpCommandLine, lpDirectory);
+	lstrcat(lpCommandLine, TEXT("\\ietabhelper.exe"));
+
+	if (CreateProcess(
+		NULL,  // it will get the app name from the next argument
+		lpCommandLine,
+		&Security,
+		&Security,
+		FALSE,  // IE doesn't need your open handles
+		CREATE_NEW_PROCESS_GROUP,
+		NULL,  // inherit current environment
+		NULL,
+		&si,
+		&pi))
+	{
+		DWORD res = WaitForSingleObject(pi.hProcess, INFINITE);
+		processId = pi.dwProcessId;
+		hProcessie = pi.hProcess;
+	}
+}*/

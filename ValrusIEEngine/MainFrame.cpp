@@ -6,6 +6,7 @@
 #include <iostream>
 #include <string>
 #include <Sddl.h>
+#include <Exdispid.h>
 
 #include "WebBrowser.h"
 #include "ProcessMessage.h"
@@ -45,6 +46,13 @@ void updateIERegHKCU(std::wstring key, int val)
 	HKEY hKey = Utils::OpenKey(HKEY_CURRENT_USER, fullPathKey.c_str());
 	Utils::SetIntVal(hKey, L"ValerusIEEngine.exe", val);
 	RegCloseKey(hKey);
+}
+
+void updateIERegHKCUString(std::wstring key, LPCWSTR val)
+{
+	std::wstring fullPathKey = L"Software\\Vicon\\ChromeExt\\";
+	//HKEY hKey = Utils::OpenKey(HKEY_CURRENT_USER, fullPathKey.c_str());
+	Utils::SetStringVal(HKEY_CURRENT_USER, fullPathKey.c_str(), key.c_str(), val);
 }
 
 BOOL GetLaunchActPermissionsWithIL(SECURITY_DESCRIPTOR **ppSD)
@@ -175,18 +183,27 @@ LRESULT CALLBACK MainFrame::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 	case WM_WEB_CONTROL_MESSAGE:
 		if(lParam)
 		{
-			std::wstring url = (wchar_t*)lParam;
-			std::string urlA = std::string(url.begin(), url.end());
-			std::string message = "{\"text\":\""+ urlA +"\",\"type\":\"#NEW_WINDOW_OPEN#\"}";
+			if (wParam == DISPID_NEWWINDOW3)
+			{
+				std::wstring url = (wchar_t*)lParam;
+				std::string urlA = std::string(url.begin(), url.end());
+				std::string message = "{\"text\":\"" + urlA + "\",\"type\":\"#NEW_WINDOW_OPEN#\"}";
 
-			size_t len = message.length();
+				size_t len = message.length();
 
-			std::cout << char(len >> 0)
-				<< char(len >> 8)
-				<< char(len >> 16)
-				<< char(len >> 24);
+				std::cout << char(len >> 0)
+					<< char(len >> 8)
+					<< char(len >> 16)
+					<< char(len >> 24);
 
-			std::cout << message << std::flush;
+				std::cout << message << std::flush;
+			}
+			else if (wParam == DISPID_DOCUMENTCOMPLETE)
+			{
+				std::wstring sessionData = (wchar_t*)lParam;
+				updateIERegHKCUString(L"token", sessionData.c_str());
+			}
+			
 		}
 		break;
 	case WM_SIZE:

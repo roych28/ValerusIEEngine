@@ -1063,7 +1063,7 @@ DWORD GetintVal(HKEY hKey, LPCTSTR lpValue)
 	return data;
 }
 
-BOOL SetcharVal(HKEY Key, LPCWSTR subkey, LPCWSTR StringName, LPCWSTR Stringdata)
+BOOL Utils::SetStringVal(HKEY Key, LPCWSTR subkey, LPCWSTR StringName, LPCWSTR Stringdata)
 {
 	HKEY hKey = Utils::OpenKey(Key, subkey);
 
@@ -1097,9 +1097,22 @@ BOOL SetcharVal(HKEY Key, LPCWSTR subkey, LPCWSTR StringName, LPCWSTR Stringdata
 	return setRes;
 }
 
+std::wstring Utils::GetStringVal(HKEY Key, LPCWSTR subkey, LPCWSTR StringName)
+{
+	DWORD dwType = REG_SZ;
+	HKEY hKey = 0;
+	wchar_t value[1024];
+	DWORD value_length = 1024;
+	RegOpenKey(Key, subkey, &hKey);
+	RegQueryValueEx(hKey, StringName, NULL, &dwType, (LPBYTE)&value, &value_length);
+	RegCloseKey(hKey);
+
+	return std::wstring(value);
+}
+
 std::wstring Utils::GetDomainFromURL(std::wstring url)
 {
-	wchar_t domain[1024];
+	wchar_t domain[1024]; 
 
 	int retLen = swscanf_s(url.c_str(), L"http://%[^/]", domain);
 
@@ -1168,15 +1181,4 @@ DWORD GetProcessIntegrityLevel(HANDLE hProcess,
 	}
 	return err;
 }
-/*wchar_t* GetCharVal(HKEY Key, LPCWSTR subkey, LPCWSTR StringName)
-{
-	DWORD dwType = REG_SZ;
-	HKEY hKey = 0;
-	wchar_t value[1024];
-	DWORD value_length = 1024;
-	RegOpenKey(HKEY_LOCAL_MACHINE, subkey, &hKey);
-	RegQueryValueEx(hKey, StringName, NULL, &dwType, (LPBYTE)&value, &value_length);
-	RegCloseKey(hKey);
 
-	return value;
-}*/
