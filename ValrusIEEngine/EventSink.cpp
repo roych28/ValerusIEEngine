@@ -156,13 +156,6 @@ STDMETHODIMP CEventSink::Invoke(DISPID dispIdMember,REFIID riid,LCID lcid,WORD w
 		wsprintf(urlBuf, _T("%ls"), (LPOLESTR)v[0].bstrVal);
 		std::wstring szUrl = urlBuf;
 
-		/*std::string::size_type i = szUrl.find(L"new_window");
-
-		if (i == std::string::npos)
-		{
-			return S_OK;
-		}*/
-
 		std::wstring val = Utils::GetStringVal(HKEY_CURRENT_USER, L"Software\\Vicon\\ChromeExt\\", L"token");
 
 		if (val.length() < 10)
@@ -201,7 +194,7 @@ STDMETHODIMP CEventSink::Invoke(DISPID dispIdMember,REFIID riid,LCID lcid,WORD w
 		}
 
 		_bstr_t bstrSessionData(val.c_str());
-		hr = spHTMLStorage->setItem(L"token", bstrSessionData);
+		//hr = spHTMLStorage->setItem(L"token", bstrSessionData);
 	}
 
 	for(n=0;n<5;n++) 
