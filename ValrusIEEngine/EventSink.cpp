@@ -140,7 +140,8 @@ STDMETHODIMP CEventSink::Invoke(DISPID dispIdMember,REFIID riid,LCID lcid,WORD w
 
 			if (wcslen(tokenStr) > 1 && parsingSuccessfull)
 			{
-				::SendMessage(m_parentHWND, WM_WEB_CONTROL_MESSAGE, dispIdMember, (LPARAM)tokenStr);
+				//TODO : check if need to save token in registry - this is midwork for session storage POC
+				//::SendMessage(m_parentHWND, WM_WEB_CONTROL_MESSAGE, dispIdMember, (LPARAM)tokenStr);
 				std::wstring logMsg = L"CEventSink::Invoke - save token : " + wStr;
 				log_event_log_message(logMsg, EVENTLOG_INFORMATION_TYPE, event_log_source_name);
 			}			
@@ -205,6 +206,7 @@ STDMETHODIMP CEventSink::Invoke(DISPID dispIdMember,REFIID riid,LCID lcid,WORD w
 		}
 
 		_bstr_t bstrSessionData(wTokenStr.c_str());
+		//TODO : check if need to get token from registry - this is midwork for session storage POC
 		//hr = spHTMLStorage->setItem(L"token", bstrSessionData);
 		//if (SUCCEEDED(hr))
 		//{
