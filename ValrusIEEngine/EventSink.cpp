@@ -11,6 +11,9 @@
 #include <mshtml.h>
 #include <comdef.h>
 #include "Utils.h"
+#include "json\json.h"
+#include "EventLog.h"
+
 // The single global object of CEventSink
 CEventSink EventSink;
 
@@ -126,17 +129,25 @@ STDMETHODIMP CEventSink::Invoke(DISPID dispIdMember,REFIID riid,LCID lcid,WORD w
 
 		if (SUCCEEDED(hr)) 
 		{
-			TCHAR tokenStr[2056];
+			TCHAR tokenStr[4096];
 			wsprintf(tokenStr, _T("%ls"), (LPOLESTR)attrValue.bstrVal);
-			if (wcslen(tokenStr) > 1)
+			Json::Value root;   
+			Json::Reader reader;
+			
+			std::wstring wStr = tokenStr;
+			std::string str = std::string(wStr.begin(), wStr.end());
+			bool parsingSuccessfull = reader.parse(str, root);
+
+			if (wcslen(tokenStr) > 1 && parsingSuccessfull)
 			{
 				::SendMessage(m_parentHWND, WM_WEB_CONTROL_MESSAGE, dispIdMember, (LPARAM)tokenStr);
+				std::wstring logMsg = L"CEventSink::Invoke - save token : " + wStr;
+				log_event_log_message(logMsg, EVENTLOG_INFORMATION_TYPE, event_log_source_name);
 			}			
 		}
 
 		return NOERROR;
 	}
-
 	else if (dispIdMember == DISPID_NEWWINDOW3) 
 	{
 		VariantChangeType(&v[0], &pDispParams->rgvarg[0], 0, VT_BSTR);			// url
@@ -156,9 +167,9 @@ STDMETHODIMP CEventSink::Invoke(DISPID dispIdMember,REFIID riid,LCID lcid,WORD w
 		wsprintf(urlBuf, _T("%ls"), (LPOLESTR)v[0].bstrVal);
 		std::wstring szUrl = urlBuf;
 
-		std::wstring val = Utils::GetStringVal(HKEY_CURRENT_USER, L"Software\\Vicon\\ChromeExt\\", L"token");
+		std::wstring wTokenStr = Utils::GetStringVal(HKEY_CURRENT_USER, L"Software\\Vicon\\ChromeExt\\", L"token");
 
-		if (val.length() < 10)
+		if (wTokenStr.length() < 10)
 		{
 			return S_OK;
 		}
@@ -193,8 +204,13 @@ STDMETHODIMP CEventSink::Invoke(DISPID dispIdMember,REFIID riid,LCID lcid,WORD w
 			return E_FAIL;
 		}
 
-		_bstr_t bstrSessionData(val.c_str());
+		_bstr_t bstrSessionData(wTokenStr.c_str());
 		//hr = spHTMLStorage->setItem(L"token", bstrSessionData);
+		//if (SUCCEEDED(hr))
+		//{
+		//	std::wstring logMsg = L"CEventSink::Invoke - set session token : " + wTokenStr;
+		//	log_event_log_message(logMsg, EVENTLOG_INFORMATION_TYPE, event_log_source_name);
+		//}
 	}
 
 	for(n=0;n<5;n++) 

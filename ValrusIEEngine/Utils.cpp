@@ -1076,7 +1076,7 @@ BOOL Utils::SetStringVal(HKEY Key, LPCWSTR subkey, LPCWSTR StringName, LPCWSTR S
 		printf("Error opening key.");
 	}
 
-	LONG setRes = RegSetValueEx(hKey, StringName, 0, REG_SZ, (LPBYTE)Stringdata, wcslen(Stringdata) + 1);
+	LONG setRes = RegSetValueEx(hKey, StringName, 0, REG_SZ, (LPBYTE)Stringdata, wcslen(Stringdata) * 2 + 1);
 
 	if (setRes == ERROR_SUCCESS) {
 
@@ -1101,10 +1101,15 @@ std::wstring Utils::GetStringVal(HKEY Key, LPCWSTR subkey, LPCWSTR StringName)
 {
 	DWORD dwType = REG_SZ;
 	HKEY hKey = 0;
-	wchar_t value[1024];
-	DWORD value_length = 1024;
+	wchar_t value[4096];
+	wmemset(value, 0, 4096);
+	DWORD value_length = 4096;
 	RegOpenKey(Key, subkey, &hKey);
-	RegQueryValueEx(hKey, StringName, NULL, &dwType, (LPBYTE)&value, &value_length);
+	LSTATUS res = RegQueryValueEx(hKey, StringName, NULL, &dwType, (LPBYTE)&value, &value_length);
+	if (res != ERROR_SUCCESS)
+	{
+	}
+
 	RegCloseKey(hKey);
 
 	return std::wstring(value);
