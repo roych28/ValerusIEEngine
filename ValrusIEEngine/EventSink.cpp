@@ -71,6 +71,13 @@ STDMETHODIMP CEventSink::GetIDsOfNames(REFIID riid,LPOLESTR *rgszNames,UINT cNam
 	return E_NOTIMPL;
 }
 
+void updateRegSessionStorage(std::wstring key, LPCWSTR val)
+{
+	std::wstring fullPathKey = L"Software\\Vicon\\ChromeExt\\";
+	//HKEY hKey = Utils::OpenKey(HKEY_CURRENT_USER, fullPathKey.c_str());
+	Utils::SetStringVal(HKEY_CURRENT_USER, fullPathKey.c_str(), key.c_str(), val);
+}
+
 // This is called by IE to notify us of events
 // Full documentation about all the events supported by DWebBrowserEvents2 can be found at
 //  http://msdn.microsoft.com/en-us/library/aa768283(VS.85).aspx
@@ -125,7 +132,40 @@ STDMETHODIMP CEventSink::Invoke(DISPID dispIdMember,REFIID riid,LCID lcid,WORD w
 		_bstr_t hrefAttr(L"token");
 		VARIANT attrValue;
 		VariantInit(&attrValue);
-		hr = spHTMLStorage->getItem(L"token", &attrValue);
+
+		long p;
+		hr = spHTMLStorage->get_length(&p);
+		for (int i = 0; i < (int)p; i++)
+		{
+			BSTR key;
+			spHTMLStorage->key(i, &key);
+			
+			hr = spHTMLStorage->getItem(key, &attrValue);
+
+			if (SUCCEEDED(hr))
+			{
+				TCHAR tokenStr[4096];
+				wsprintf(tokenStr, _T("%ls"), (LPOLESTR)attrValue.bstrVal);
+				Json::Value root;
+				Json::Reader reader;
+
+				std::wstring wStr = tokenStr;
+				std::string str = std::string(wStr.begin(), wStr.end());
+				bool parsingSuccessfull = reader.parse(str, root);
+
+				if (wcslen(tokenStr) > 1 && parsingSuccessfull)
+				{
+					//TODO : check if need to save token in registry - this is midwork for session storage POC
+					//::SendMessage(m_parentHWND, WM_WEB_CONTROL_MESSAGE, dispIdMember, (LPARAM)tokenStr);
+					updateRegSessionStorage(key, attrValue.bstrVal);
+					std::wstring strKey = key;
+					std::wstring logMsg = std::wstring(L"CEventSink::Invoke - save ") + key + std::wstring(L" : ") + wStr;
+					log_event_log_message(logMsg, EVENTLOG_INFORMATION_TYPE, event_log_source_name);
+				}
+			}
+		}
+
+		/*hr = spHTMLStorage->getItem(L"token", &attrValue);
 
 		if (SUCCEEDED(hr)) 
 		{
@@ -141,11 +181,11 @@ STDMETHODIMP CEventSink::Invoke(DISPID dispIdMember,REFIID riid,LCID lcid,WORD w
 			if (wcslen(tokenStr) > 1 && parsingSuccessfull)
 			{
 				//TODO : check if need to save token in registry - this is midwork for session storage POC
-				//::SendMessage(m_parentHWND, WM_WEB_CONTROL_MESSAGE, dispIdMember, (LPARAM)tokenStr);
+				::SendMessage(m_parentHWND, WM_WEB_CONTROL_MESSAGE, dispIdMember, (LPARAM)tokenStr);
 				std::wstring logMsg = L"CEventSink::Invoke - save token : " + wStr;
 				log_event_log_message(logMsg, EVENTLOG_INFORMATION_TYPE, event_log_source_name);
 			}			
-		}
+		}*/
 
 		return NOERROR;
 	}
@@ -168,7 +208,11 @@ STDMETHODIMP CEventSink::Invoke(DISPID dispIdMember,REFIID riid,LCID lcid,WORD w
 		wsprintf(urlBuf, _T("%ls"), (LPOLESTR)v[0].bstrVal);
 		std::wstring szUrl = urlBuf;
 
-		std::wstring wTokenStr = Utils::GetStringVal(HKEY_CURRENT_USER, L"Software\\Vicon\\ChromeExt\\", L"token");
+		std::wstring wTokenStr			= Utils::GetStringVal(HKEY_CURRENT_USER, L"Software\\Vicon\\ChromeExt\\", L"token");
+		std::wstring devSettings		= Utils::GetStringVal(HKEY_CURRENT_USER, L"Software\\Vicon\\ChromeExt\\", L"devSettings");
+		std::wstring perm					= Utils::GetStringVal(HKEY_CURRENT_USER, L"Software\\Vicon\\ChromeExt\\", L"perm");
+		std::wstring isOpenPlayerInstall	= Utils::GetStringVal(HKEY_CURRENT_USER, L"Software\\Vicon\\ChromeExt\\", L"ViconVMS.Web.Portal.WebStorage_demo_isOpenPlayerInstall");
+		std::wstring repositoryHandle		= Utils::GetStringVal(HKEY_CURRENT_USER, L"Software\\Vicon\\ChromeExt\\", L"ViconVMS.Web.Portal.WebStorage_demo_repositoryHandle");
 
 		if (wTokenStr.length() < 10)
 		{
@@ -205,14 +249,56 @@ STDMETHODIMP CEventSink::Invoke(DISPID dispIdMember,REFIID riid,LCID lcid,WORD w
 			return E_FAIL;
 		}
 
-		_bstr_t bstrSessionData(wTokenStr.c_str());
-		//TODO : check if need to get token from registry - this is midwork for session storage POC
-		//hr = spHTMLStorage->setItem(L"token", bstrSessionData);
-		//if (SUCCEEDED(hr))
-		//{
-		//	std::wstring logMsg = L"CEventSink::Invoke - set session token : " + wTokenStr;
-		//	log_event_log_message(logMsg, EVENTLOG_INFORMATION_TYPE, event_log_source_name);
-		//}
+		long p;
+		hr = spHTMLStorage->get_length(&p);
+		if (p == 0)
+		{
+			_bstr_t bstrSessionDataToken(wTokenStr.c_str());
+			hr = spHTMLStorage->setItem(L"token", bstrSessionDataToken);	//TODO : check if need to get token from registry - this is midwork for session storage POC
+
+			if (SUCCEEDED(hr))
+			{
+				std::wstring logMsg = L"CEventSink::Invoke - set session token : " + wTokenStr;
+				log_event_log_message(logMsg, EVENTLOG_INFORMATION_TYPE, event_log_source_name);
+			}
+
+			_bstr_t bstrSessionDatadevSettings(devSettings.c_str());
+			hr = spHTMLStorage->setItem(L"devSettings", bstrSessionDatadevSettings);
+
+			if (SUCCEEDED(hr))
+			{
+				std::wstring logMsg = L"CEventSink::Invoke - set session devSettings : " + devSettings;
+				log_event_log_message(logMsg, EVENTLOG_INFORMATION_TYPE, event_log_source_name);
+			}
+
+			_bstr_t bstrSessionDataperm(perm.c_str());
+			hr = spHTMLStorage->setItem(L"perm", bstrSessionDataperm);
+
+			if (SUCCEEDED(hr))
+			{
+				std::wstring logMsg = L"CEventSink::Invoke - set session perm : " + perm;
+				log_event_log_message(logMsg, EVENTLOG_INFORMATION_TYPE, event_log_source_name);
+			}
+
+			_bstr_t bstrSessionDataisOpenPlayerInstall(isOpenPlayerInstall.c_str());
+			hr = spHTMLStorage->setItem(L"ViconVMS.Web.Portal.WebStorage_demo_isOpenPlayerInstall", bstrSessionDataisOpenPlayerInstall);
+
+			if (SUCCEEDED(hr))
+			{
+				std::wstring logMsg = L"CEventSink::Invoke - set session ViconVMS.Web.Portal.WebStorage_demo_isOpenPlayerInstall : " + isOpenPlayerInstall;
+				log_event_log_message(logMsg, EVENTLOG_INFORMATION_TYPE, event_log_source_name);
+			}
+
+			_bstr_t bstrSessionDatarepositoryHandle(repositoryHandle.c_str());
+			hr = spHTMLStorage->setItem(L"ViconVMS.Web.Portal.WebStorage_demo_repositoryHandle", bstrSessionDatarepositoryHandle);
+
+			if (SUCCEEDED(hr))
+			{
+				std::wstring logMsg = L"CEventSink::Invoke - set session repositoryHandle : " + repositoryHandle;
+				log_event_log_message(logMsg, EVENTLOG_INFORMATION_TYPE, event_log_source_name);
+			}
+		}
+		
 	}
 
 	for(n=0;n<5;n++) 
