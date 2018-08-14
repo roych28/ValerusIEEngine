@@ -24,6 +24,7 @@ private:
 	
 	void SetIEWindowSize();
 	void SetIEWindowShow(bool visible);
+	void updateIERegHKCU(std::wstring key, int val);
 public:
 	MainFrame(HINSTANCE hInst);
 	~MainFrame();

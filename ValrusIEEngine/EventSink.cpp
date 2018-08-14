@@ -43,7 +43,6 @@ STDMETHODIMP_(ULONG) CEventSink::Release()
 
 // We don't need to implement the next three methods because we are just a pure event sink
 // We only care about Invoke() which is what IE calls to notify us of events
-
 STDMETHODIMP CEventSink::GetTypeInfoCount(UINT *pctinfo)
 {
 	UNREFERENCED_PARAMETER(pctinfo);
@@ -74,7 +73,6 @@ STDMETHODIMP CEventSink::GetIDsOfNames(REFIID riid,LPOLESTR *rgszNames,UINT cNam
 void updateRegSessionStorage(std::wstring key, LPCWSTR val)
 {
 	std::wstring fullPathKey = L"Software\\Vicon\\ChromeExt\\";
-	//HKEY hKey = Utils::OpenKey(HKEY_CURRENT_USER, fullPathKey.c_str());
 	Utils::SetStringVal(HKEY_CURRENT_USER, fullPathKey.c_str(), key.c_str(), val);
 }
 
@@ -91,12 +89,16 @@ STDMETHODIMP CEventSink::Invoke(DISPID dispIdMember,REFIID riid,LCID lcid,WORD w
 	VARIANT v[5];					
 	int n;
 
+	std::wstring logmsg = L"CEventSink::Invoke" + std::to_wstring(dispIdMember) + L"\r\n";
+	OutputDebugString(logmsg.c_str());
 	if(!IsEqualIID(riid,IID_NULL)) 
 		return DISP_E_UNKNOWNINTERFACE;
 
 	for(n=0;n<5;n++) 
 		VariantInit(&v[n]);
 
+	//this code is an event after web browser complete  
+	//this is a test for get the session storage and save 
 	if (dispIdMember == DISPID_DOCUMENTCOMPLETE)
 	{
 		if (!webBrowser) 
@@ -165,30 +167,11 @@ STDMETHODIMP CEventSink::Invoke(DISPID dispIdMember,REFIID riid,LCID lcid,WORD w
 			}
 		}
 
-		/*hr = spHTMLStorage->getItem(L"token", &attrValue);
-
-		if (SUCCEEDED(hr)) 
-		{
-			TCHAR tokenStr[4096];
-			wsprintf(tokenStr, _T("%ls"), (LPOLESTR)attrValue.bstrVal);
-			Json::Value root;   
-			Json::Reader reader;
-			
-			std::wstring wStr = tokenStr;
-			std::string str = std::string(wStr.begin(), wStr.end());
-			bool parsingSuccessfull = reader.parse(str, root);
-
-			if (wcslen(tokenStr) > 1 && parsingSuccessfull)
-			{
-				//TODO : check if need to save token in registry - this is midwork for session storage POC
-				::SendMessage(m_parentHWND, WM_WEB_CONTROL_MESSAGE, dispIdMember, (LPARAM)tokenStr);
-				std::wstring logMsg = L"CEventSink::Invoke - save token : " + wStr;
-				log_event_log_message(logMsg, EVENTLOG_INFORMATION_TYPE, event_log_source_name);
-			}			
-		}*/
-
 		return NOERROR;
 	}
+	//this code is an event when a new window is open from the ie itself(link etc...)
+	//here we prevent from the new IE to launch and send message to MainFrame class 
+	//there it notify the chrome ext about the new window via the native messaging pipe
 	else if (dispIdMember == DISPID_NEWWINDOW3) 
 	{
 		VariantChangeType(&v[0], &pDispParams->rgvarg[0], 0, VT_BSTR);			// url
@@ -200,6 +183,8 @@ STDMETHODIMP CEventSink::Invoke(DISPID dispIdMember,REFIID riid,LCID lcid,WORD w
 
 		::SendMessage(m_parentHWND, WM_WEB_CONTROL_MESSAGE, dispIdMember, (LPARAM)urlStr);
 	}
+	//this code is an event before web browser navigates 
+	//this is a test for set the session storage 
 	else if (dispIdMember == DISPID_BEFORENAVIGATE2)
 	{
 		VariantChangeType(&v[0], &pDispParams->rgvarg[5], 0, VT_BSTR);			// url
@@ -298,7 +283,6 @@ STDMETHODIMP CEventSink::Invoke(DISPID dispIdMember,REFIID riid,LCID lcid,WORD w
 				log_event_log_message(logMsg, EVENTLOG_INFORMATION_TYPE, event_log_source_name);
 			}
 		}
-		
 	}
 
 	for(n=0;n<5;n++) 
@@ -358,3 +342,58 @@ if (dispIdMember == DISPID_BEFORENAVIGATE2) { // Handle the BeforeNavigate2 even
 	//	*(pDispParams->rgvarg[0].pboolVal)=VARIANT_FALSE;
 }
 else*/
+
+/*hr = spHTMLStorage->getItem(L"token", &attrValue);
+
+if (SUCCEEDED(hr))
+{
+TCHAR tokenStr[4096];
+wsprintf(tokenStr, _T("%ls"), (LPOLESTR)attrValue.bstrVal);
+Json::Value root;
+Json::Reader reader;
+
+std::wstring wStr = tokenStr;
+std::string str = std::string(wStr.begin(), wStr.end());
+bool parsingSuccessfull = reader.parse(str, root);
+
+if (wcslen(tokenStr) > 1 && parsingSuccessfull)
+{
+//TODO : check if need to save token in registry - this is midwork for session storage POC
+::SendMessage(m_parentHWND, WM_WEB_CONTROL_MESSAGE, dispIdMember, (LPARAM)tokenStr);
+std::wstring logMsg = L"CEventSink::Invoke - save token : " + wStr;
+log_event_log_message(logMsg, EVENTLOG_INFORMATION_TYPE, event_log_source_name);
+}
+}*/
+/*
+else if (dispIdMember == DISPID_COMMANDSTATECHANGE)
+{
+	IDispatch *idisp; webBrowser->get_Document(&idisp);
+	IWebBrowser2* webBrowser2 = webBrowser;
+	IDispatchPtr documentDispatch;
+	HRESULT hr = webBrowser2->get_Document(&documentDispatch);
+	if (FAILED(hr) || !documentDispatch) {
+		return E_FAIL;
+	}
+	IHTMLDocument2Ptr htmlDocument2;
+	hr = documentDispatch->QueryInterface(IID_IHTMLDocument2,
+		(void**)&htmlDocument2);
+	if (FAILED(hr) || !htmlDocument2) {
+		return E_FAIL;
+	}
+	IHTMLWindow2Ptr htmlWindow2;
+	hr = htmlDocument2->get_parentWindow(
+		static_cast<IHTMLWindow2**>(&htmlWindow2));
+	if (FAILED(hr) || !htmlWindow2) {
+		return E_FAIL;
+	}
+
+	IHTMLEventObjPtr htmlEvent;
+	hr = htmlWindow2->get_event(&htmlEvent);
+	if (FAILED(hr) || !htmlEvent) {
+		//	LOG_WARNING << "ClickEvents::Invoke() failed: "
+		//		"IHTMLWindow2->get_event() failed";
+		return S_OK;
+	}
+	else {
+
+	}*/

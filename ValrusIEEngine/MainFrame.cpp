@@ -21,6 +21,7 @@ TCHAR* szWndClassMain = _T("main window wrapper");
 static char __DEBUG_BUF[1024];
 #define DLog(fmt, ...)  sprintf_s(__DEBUG_BUF, 1024,fmt, ##__VA_ARGS__); OutputDebugStringA(__DEBUG_BUF);
 
+//c'tor
 MainFrame::MainFrame(HINSTANCE hInst)
 {
 	this->hInst = hInst;
@@ -40,52 +41,13 @@ MainFrame::~MainFrame()
 	log_event_log_message(L"MainFrame Dtor", EVENTLOG_INFORMATION_TYPE,	event_log_source_name);
 }
 
-void updateIERegHKCU(std::wstring key, int val)
+void MainFrame::updateIERegHKCU(std::wstring key, int val)
 {
 	std::wstring fullPathKey = L"Software\\Microsoft\\Internet Explorer\\Main\\FeatureControl\\" + key;
 	HKEY hKey = Utils::OpenKey(HKEY_CURRENT_USER, fullPathKey.c_str());
 	Utils::SetIntVal(hKey, L"ValerusIEEngine.exe", val);
 	RegCloseKey(hKey);
 }
-
-void updateIERegHKCUString(std::wstring key, LPCWSTR val)
-{
-	std::wstring fullPathKey = L"Software\\Vicon\\ChromeExt\\";
-	//HKEY hKey = Utils::OpenKey(HKEY_CURRENT_USER, fullPathKey.c_str());
-	Utils::SetStringVal(HKEY_CURRENT_USER, fullPathKey.c_str(), key.c_str(), val);
-}
-
-BOOL GetLaunchActPermissionsWithIL(SECURITY_DESCRIPTOR **ppSD)
-{
-	// Allow World Local Launch/Activation permissions. Label the SD for LOW IL Execute UP
-	SECURITY_DESCRIPTOR* pSD = NULL;
-	LPWSTR lpszSDDL = L"O:BAG:BADSadA;;0xb;;;WD)SSadML;;NX;;;LW)";
-	if (ConvertStringSecurityDescriptorToSecurityDescriptorW(lpszSDDL, SDDL_REVISION_1, (PSECURITY_DESCRIPTOR *)&pSD, NULL))
-	{
-		*ppSD = pSD;
-		return TRUE;
-	}
-
-	return FALSE;
-}
-
-BOOL SetLaunchActPermissions(HKEY hkey, PSECURITY_DESCRIPTOR pSD)
-{
-	BOOL bResult = FALSE;
-	DWORD dwLen = GetSecurityDescriptorLength(pSD);
-	LONG lResult;
-	lResult = RegSetValueExA(hkey,
-		"LaunchPermission",
-		0,
-		REG_BINARY,
-		(BYTE*)pSD,
-		dwLen);
-	if (lResult != ERROR_SUCCESS) goto done;
-	
-	bResult = TRUE;
-done:
-	return bResult;
-};
 
 bool MainFrame::Init()
 {
@@ -155,15 +117,6 @@ bool MainFrame::Init()
 	updateIERegHKCU(L"FEATURE_XSSFILTER", 1);
 	updateIERegHKCU(L"FEATURE_ZONE_ELEVATION", 1);
 
-	HKEY appIDKey;
-	if (ERROR_SUCCESS == RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("Software\\Classes\\AppID\\{B3670687-A8EB-4F5D-AC08-1B97F2D11DAB}"), 0, KEY_WRITE, &appIDKey))
-	{
-		SECURITY_DESCRIPTOR* pSD;
-		if (GetLaunchActPermissionsWithIL(&pSD))
-			SetLaunchActPermissions(appIDKey, pSD);
-		RegCloseKey(appIDKey);
-	}
-
 	return true; 
 }
 
@@ -180,10 +133,10 @@ LRESULT CALLBACK MainFrame::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 	DLog("WndProc %s\r\n", Utils::getMessageAsString(uMsg));
 	switch (uMsg)
 	{
-	case WM_WEB_CONTROL_MESSAGE:
+	case WM_WEB_CONTROL_MESSAGE: //custom user messages 
 		if(lParam)
 		{
-			if (wParam == DISPID_NEWWINDOW3)
+			if (wParam == DISPID_NEWWINDOW3) //notify chrome about new window text: url as param
 			{
 				std::wstring url = (wchar_t*)lParam;
 				std::string urlA = std::string(url.begin(), url.end());
@@ -197,13 +150,7 @@ LRESULT CALLBACK MainFrame::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 					<< char(len >> 24);
 
 				std::cout << message << std::flush;
-			}
-			else if (wParam == DISPID_DOCUMENTCOMPLETE)
-			{
-				std::wstring sessionData = (wchar_t*)lParam;
-				updateIERegHKCUString(L"token", sessionData.c_str());
-			}
-			
+			}			
 		}
 		break;
 	case WM_SIZE:
@@ -232,7 +179,21 @@ LRESULT CALLBACK MainFrame::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 		break;
 	case WM_SETCURSOR:
 		break;
-	case WM_PAINT:
+	case WM_MOUSEACTIVATE:
+	{
+		DLog("WM_MOUSEACTIVATE %d\r\n", wParam);
+
+		std::string message = "{\"text\":\"click_event\",\"type\":\"#CTRL_ACTIVATED#\"}";
+
+		size_t len = message.length();
+
+		std::cout << char(len >> 0)
+			<< char(len >> 8)
+			<< char(len >> 16)
+			<< char(len >> 24);
+
+		std::cout << message << std::flush;
+	}
 		break;
 	case WM_SYSCOLORCHANGE:
 		break;
@@ -279,12 +240,12 @@ void MainFrame::SetIEWindowSize()
 	GetWindowRect(hwndChrome, &rcWind);
 	ptDiff.x = (rcWind.right - rcWind.left) - rcClient.right;
 	ptDiff.y = (rcWind.bottom - rcWind.top) - rcClient.bottom;
-
+	//Maximaize window
 	if (rcWind.left == -8 && rcWind.top == -8)
 	{
 		SetWindowPos(hWndMain, HWND_TOP, rcClient.left, (rcWind.bottom) - height, (rcWind.right - rcWind.left) - ptDiff.x, rcClient.bottom - ptDiff.y, SWP_SHOWWINDOW);
 	}
-	else
+	else //window mode
 	{
 		SetWindowPos(hWndMain, HWND_TOP, 1, (rcWind.bottom - rcWind.top) - height - ptDiff.y, rcClient.right - 1, rcClient.bottom - ptDiff.y-100, SWP_SHOWWINDOW);
 	}
@@ -300,20 +261,7 @@ void MainFrame::SetIEWindowShow(bool visible)
 	UpdateWindow(hwndChrome);
 }
 
-
-BOOL CALLBACK MainFrame::EnumWindowsChildrenProc(HWND hwnd, LPARAM lpParam)
-{
-	TCHAR class_name[512];
-	TCHAR title[512];
-	GetClassName(hwnd, class_name, sizeof(class_name));
-	GetWindowText(hwnd, title, sizeof(title));		
-	
-	//SetWindowPos(hwnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
-	
-	return TRUE;
-}
-
-//callback that finds chrome and ie windows
+//callback that finds chrome and ie windows and set it as parent child
 BOOL CALLBACK MainFrame::EnumWindowsProc(HWND hwnd, LPARAM lpParam)
 {
 	TCHAR class_name[4096];
@@ -335,6 +283,7 @@ BOOL CALLBACK MainFrame::EnumWindowsProc(HWND hwnd, LPARAM lpParam)
 	return TRUE;
 }
 
+//this function read messages from pipe and execute commands according parameters
 DWORD WINAPI MainFrame::PipelineThreadFunction(LPVOID lpParam)
 {
 	while (!This->quitThreadPipe)
@@ -348,7 +297,7 @@ DWORD WINAPI MainFrame::PipelineThreadFunction(LPVOID lpParam)
 			length = length | (read_char << i * 8);
 		}
 
-		//read the json-message
+		//read the json message
 		std::string msg = "";
 		for (int i = 0; i < (int)length; i++)
 		{
@@ -360,6 +309,7 @@ DWORD WINAPI MainFrame::PipelineThreadFunction(LPVOID lpParam)
 			continue;
 		}
 
+		//proccess json message into the value map
 		ProcessMessage(msg.c_str(), This->parsedValues);
 
 		std::string message = "{\"text\":\"This is a response message\",\"type\":\"" + This->parsedValues["command"] + "\"}";
@@ -391,13 +341,15 @@ DWORD WINAPI MainFrame::PipelineThreadFunction(LPVOID lpParam)
 		{
 			This->SetIEWindowShow(true);
 		}
-		else if (This->parsedValues["command"] == "#CONNECTED#")
+		//first message to find window and attach it
+		else if (This->parsedValues["command"] == "#CONNECTED#") 
 		{
 			std::string windowTitleA = This->parsedValues["windowTitle"];
 			This->windowTitle = std::wstring(windowTitleA.begin(), windowTitleA.end());
 			::Sleep(200); //wait for window title to update
 			EnumWindows(MainFrame::EnumWindowsProc, NULL);
 		}
+		//after attach navigate to "url" 
 		else if (This->parsedValues["command"] == "#INIT#")
 		{
 			std::string url = This->parsedValues["url"];
@@ -452,4 +404,54 @@ else if (This->parsedValues["command"] == "#ONMOVE#")
 {
 
 }*/
+/*
+BOOL CALLBACK MainFrame::EnumWindowsChildrenProc(HWND hwnd, LPARAM lpParam)
+{
+	TCHAR class_name[512];
+	TCHAR title[512];
+	GetClassName(hwnd, class_name, sizeof(class_name));
+	GetWindowText(hwnd, title, sizeof(title));
 
+	//SetWindowPos(hwnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+
+	return TRUE;
+}*/
+/*
+BOOL GetLaunchActPermissionsWithIL(SECURITY_DESCRIPTOR **ppSD)
+{
+	// Allow World Local Launch/Activation permissions. Label the SD for LOW IL Execute UP
+	SECURITY_DESCRIPTOR* pSD = NULL;
+	LPWSTR lpszSDDL = L"O:BAG:BADSadA;;0xb;;;WD)SSadML;;NX;;;LW)";
+	if (ConvertStringSecurityDescriptorToSecurityDescriptorW(lpszSDDL, SDDL_REVISION_1, (PSECURITY_DESCRIPTOR *)&pSD, NULL))
+	{
+		*ppSD = pSD;
+		return TRUE;
+	}
+
+	return FALSE;
+}
+
+BOOL SetLaunchActPermissions(HKEY hkey, PSECURITY_DESCRIPTOR pSD)
+{
+	BOOL bResult = FALSE;
+	DWORD dwLen = GetSecurityDescriptorLength(pSD);
+	LONG lResult;
+	lResult = RegSetValueExA(hkey,
+		"LaunchPermission",
+		0,
+		REG_BINARY,
+		(BYTE*)pSD,
+		dwLen);
+	if (lResult != ERROR_SUCCESS) goto done;
+
+	bResult = TRUE;
+done:
+	return bResult;
+};
+
+void updateIERegHKCUString(std::wstring key, LPCWSTR val)
+{
+	std::wstring fullPathKey = L"Software\\Vicon\\ChromeExt\\";
+	//HKEY hKey = Utils::OpenKey(HKEY_CURRENT_USER, fullPathKey.c_str());
+	Utils::SetStringVal(HKEY_CURRENT_USER, fullPathKey.c_str(), key.c_str(), val);
+}*/

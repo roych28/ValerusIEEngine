@@ -102,6 +102,9 @@ var IEPage = {
                     url: chrome.runtime.getURL(url)
                 });
 				break;
+			case "#CTRL_ACTIVATED#":
+				window.focus();
+				break
 		}
 	},
     getMessage: function(type){
