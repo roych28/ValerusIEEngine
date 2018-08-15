@@ -130,7 +130,7 @@ void MainFrame::InjectMessage(LPMSG msg)
 
 LRESULT CALLBACK MainFrame::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	DLog("WndProc %s\r\n", Utils::getMessageAsString(uMsg));
+	//DLog("WndProc %s\r\n", Utils::getMessageAsString(uMsg));
 	switch (uMsg)
 	{
 	case WM_WEB_CONTROL_MESSAGE: //custom user messages 
@@ -181,6 +181,7 @@ LRESULT CALLBACK MainFrame::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 		break;
 	case WM_MOUSEACTIVATE:
 	{
+		::SetForegroundWindow(This->hwndChrome);
 		DLog("WM_MOUSEACTIVATE %d\r\n", wParam);
 
 		std::string message = "{\"text\":\"click_event\",\"type\":\"#CTRL_ACTIVATED#\"}";

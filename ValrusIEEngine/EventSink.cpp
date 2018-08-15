@@ -89,8 +89,6 @@ STDMETHODIMP CEventSink::Invoke(DISPID dispIdMember,REFIID riid,LCID lcid,WORD w
 	VARIANT v[5];					
 	int n;
 
-	std::wstring logmsg = L"CEventSink::Invoke" + std::to_wstring(dispIdMember) + L"\r\n";
-	OutputDebugString(logmsg.c_str());
 	if(!IsEqualIID(riid,IID_NULL)) 
 		return DISP_E_UNKNOWNINTERFACE;
 
@@ -397,3 +395,6 @@ else if (dispIdMember == DISPID_COMMANDSTATECHANGE)
 	else {
 
 	}*/
+
+	//std::wstring logmsg = L"CEventSink::Invoke" + std::to_wstring(dispIdMember) + L"\r\n";
+	//OutputDebugString(logmsg.c_str());
