@@ -4,7 +4,6 @@
 #include <tchar.h>
 #include <Windows.h>
 #include <mshtml.h>
-#include "ClickEvents.h"
 #include <memory>
 
 using namespace std;
