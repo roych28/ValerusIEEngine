@@ -25,6 +25,7 @@ private:
 	void SetIEWindowSize();
 	void SetIEWindowShow(bool visible);
 	void updateIERegHKCU(std::wstring key, int val);
+	void SendMessageToChrome(const std::string& message);
 public:
 	MainFrame(HINSTANCE hInst);
 	~MainFrame();

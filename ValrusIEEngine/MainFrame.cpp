@@ -181,8 +181,8 @@ LRESULT CALLBACK MainFrame::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 		break;
 	case WM_MOUSEACTIVATE:
 	{
-		::SetForegroundWindow(This->hwndChrome);
 		DLog("WM_MOUSEACTIVATE %d\r\n", wParam);
+		::SetForegroundWindow(This->hwndChrome);
 
 		std::string message = "{\"text\":\"click_event\",\"type\":\"#CTRL_ACTIVATED#\"}";
 
@@ -284,6 +284,17 @@ BOOL CALLBACK MainFrame::EnumWindowsProc(HWND hwnd, LPARAM lpParam)
 	return TRUE;
 }
 
+void MainFrame::SendMessageToChrome(const std::string& message)
+{
+	size_t len = message.length();
+
+	std::cout << char(len >> 0)
+		<< char(len >> 8)
+		<< char(len >> 16)
+		<< char(len >> 24);
+
+	std::cout << message << std::flush;
+}
 //this function read messages from pipe and execute commands according parameters
 DWORD WINAPI MainFrame::PipelineThreadFunction(LPVOID lpParam)
 {
@@ -318,15 +329,8 @@ DWORD WINAPI MainFrame::PipelineThreadFunction(LPVOID lpParam)
 		//command exit message
 		if (This->parsedValues["command"] == "#STOP#")
 		{
-			message = "{\"text\":\"EXITING...\"}";
-			size_t len = message.length();
-
-			std::cout << char(len >> 0)
-				<< char(len >> 8)
-				<< char(len >> 16)
-				<< char(len >> 24);
-
-			std::cout << message;
+			message = "{\"text\":\"EXITING\"}";
+			This->SendMessageToChrome(message);
 			ExitProcess(0);
 			break;
 		}
@@ -365,14 +369,7 @@ DWORD WINAPI MainFrame::PipelineThreadFunction(LPVOID lpParam)
 			log_event_log_message(L"#INIT# navigate to " + urlW, EVENTLOG_INFORMATION_TYPE, event_log_source_name);
 		}
 
-		size_t len = message.length();
-
-		std::cout << char(len >> 0)
-			<< char(len >> 8)
-			<< char(len >> 16)
-			<< char(len >> 24);
-
-		std::cout << message << std::flush;
+		This->SendMessageToChrome(message);
 	}
 	return 0;
 }
