@@ -183,6 +183,7 @@ LRESULT CALLBACK MainFrame::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 	{
 		DLog("WM_MOUSEACTIVATE %d\r\n", wParam);
 		::SetForegroundWindow(This->hwndChrome);
+		::SetForegroundWindow(This->hWndMain);
 
 		std::string message = "{\"text\":\"click_event\",\"type\":\"#CTRL_ACTIVATED#\"}";
 
